@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "@floating-ui/vue": "^1.0.6",
+    "@headlessui/vue": "^1.7.19",
+    "@heroicons/vue": "^2.1.1",
     "@vueuse/components": "^10.7.2",
     "@vueuse/core": "^10.7.2",
     "uuid": "^9.0.1",
