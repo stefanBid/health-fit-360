@@ -11,6 +11,9 @@
     "check-format": "prettier --check ."
   },
   "dependencies": {
+    "@floating-ui/vue": "^1.0.6",
+    "@vueuse/components": "^10.7.2",
+    "@vueuse/core": "^10.7.2",
     "vue": "^3.4.15"
   },
   "devDependencies": {
