@@ -25,7 +25,7 @@ const transitionSettings: Record<string, TransitionSettings> = {
     leaveToClass: 'opacity-0',
   },
   scaleAndFade: {
-    enterActiveClass: 'transition duration-300 ease-out',
+    enterActiveClass: 'transition duration-200 ease-out',
     enterFromClass: 'transform scale-95 opacity-0',
     enterToClass: 'transform scale-100 opacity-100',
     leaveActiveClass: 'transition duration-200 ease-in',

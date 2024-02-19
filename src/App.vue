@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { HfButton, HfIconButton } from '@/components';
+  import { HfButton, HfIconButton, HfDropdownMenu } from '@/components';
   import {
     TrashIcon,
     XMarkIcon,
@@ -16,6 +16,11 @@
         <hf-button color="yellow">Click me</hf-button>
         <hf-button color="violet">Click me</hf-button>
         <hf-button disabled>Click me</hf-button>
+        <hf-button
+          noStyle
+          class="p-2 border-b border-b-green-500 hover:scale-x-75"
+          >Click me</hf-button
+        >
       </div>
     </div>
     <div class="p-2">
@@ -35,6 +40,19 @@
           class="hover:rotate-180"
         />
         <hf-icon-button disabled />
+        <hf-dropdown-menu :content-data="[1, 2, 3, 4, 5, 6]">
+          <template #default="{ data }">
+            <div class="flex flex-col gap-y-2">
+              <div
+                v-for="item in data"
+                :key="item"
+                class="p-2 bg-gray-500 rounded-md"
+              >
+                {{ item }}
+              </div>
+            </div>
+          </template>
+        </hf-dropdown-menu>
       </div>
     </div>
   </div>

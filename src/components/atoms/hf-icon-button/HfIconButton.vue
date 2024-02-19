@@ -10,33 +10,41 @@
     color?: ColorVariantSettings;
     icon?: FunctionalComponent;
     disabled?: boolean;
+    noStyle?: boolean;
+    onClick?: () => void;
   }
 
   const props = withDefaults(defineProps<HfIconButtonProps>(), {
     color: 'green',
     icon: undefined,
     disabled: false,
+    noStyle: false,
   });
 </script>
 
 <template>
   <button
     :id="($attrs.id as string) || `${generateId()}-button`"
-    class="p-2 text-base transition-all duration-200 ease-in-out rounded-md outline-none shrink-0 w-fit focus:ring-2 focus:ring-offset-2 focus:ring-offset-inherit"
+    class="text-base transition-all duration-200 ease-in-out shrink-0"
     :class="[
       ($attrs.class as string) || '',
       {
+        'p-2 rounded-md outline-none w-fit focus:ring-2 focus:ring-offset-2 focus:ring-offset-inherit ':
+          !props.noStyle,
+      },
+      {
         'bg-red-500 hover:bg-red-600 ring-red-600  text-white ':
-          props.color === 'red',
+          props.color === 'red' && !props.noStyle,
         'bg-green-500 hover:bg-green-600 ring-green-600 text-white':
-          props.color === 'green',
+          props.color === 'green' && !props.noStyle,
         'bg-gray-200 hover:bg-gray-300 ring-gray-300 text-black':
-          props.color === 'gray',
+          props.color === 'gray' && !props.noStyle,
       },
       props.disabled
         ? 'cursor-not-allowed pointer-events-none opacity-50'
         : 'cursor-pointer opacity-100',
     ]"
+    @click="props.onClick"
   >
     <component
       :is="props.icon || EyeIcon"
