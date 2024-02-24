@@ -1,25 +1,27 @@
 <script setup lang="ts">
-import type { ColorVariantExtra } from '@/types/global.types';
+  import type { ColorVariantExtra } from '@/types/global.types';
 
+  interface HfButtonProps {
+    type?: 'button' | 'submit' | 'reset';
+    color?: ColorVariantExtra;
+    disabled?: boolean;
+    noStyle?: boolean;
+  }
 
-interface HfButtonProps {
-  type?: 'button' | 'submit' | 'reset';
-  color?: ColorVariantExtra;
-  disabled?: boolean;
-  noStyle?: boolean;
-}
-
-const props = withDefaults(defineProps<HfButtonProps>(), {
-  type: 'button',
-  color: 'blue',
-  disabled: false,
-  noStyle: false,
-});
+  const props = withDefaults(defineProps<HfButtonProps>(), {
+    type: 'button',
+    color: 'blue',
+    disabled: false,
+    noStyle: false,
+  });
 </script>
 
 <template>
-  <button v-bind="$attrs" :type="props.type"
-    class="text-base transition-all duration-200 ease-in-out outline-none sm:text-sm xs:text-sm " :class="[
+  <button
+    v-bind="$attrs"
+    :type="props.type"
+    class="text-base transition-all duration-200 ease-in-out outline-none sm:text-sm xs:text-sm"
+    :class="[
       {
         'inline-flex items-center justify-center px-4 py-2 transition-all duration-200 ease-in-out rounded-md w-fit gap-x-1':
           !props.noStyle,
@@ -35,7 +37,8 @@ const props = withDefaults(defineProps<HfButtonProps>(), {
       props.disabled
         ? 'cursor-not-allowed pointer-events-none opacity-50'
         : 'cursor-pointer opacity-100',
-    ]">
+    ]"
+  >
     <slot />
   </button>
 </template>

@@ -1,77 +1,106 @@
 <script setup lang="ts">
-import { usePopper } from '@/hooks';
-import { getTransition } from '@/utils';
-import { vOnClickOutside } from '@vueuse/components';
-import { HfIconButton } from '@/components';
-import { Bars3CenterLeftIcon } from '@heroicons/vue/24/solid';
-import { computed, type FunctionalComponent } from 'vue';
+  import { usePopper } from '@/hooks';
+  import { getTransition } from '@/utils';
+  import { vOnClickOutside } from '@vueuse/components';
+  import { HfIconButton } from '@/components';
+  import { Bars3CenterLeftIcon } from '@heroicons/vue/24/solid';
+  import { computed, type FunctionalComponent } from 'vue';
 
-interface MenuOption {
-  optionKey: string;
-  optionLabel: string;
-  icon: FunctionalComponent
-}
+  interface MenuOption {
+    optionKey: string;
+    optionLabel: string;
+    icon: FunctionalComponent;
+  }
 
-interface HfDropdownMenuProps {
-  options?: MenuOption[];
-  menuIcon?: FunctionalComponent;
-  disabled?: boolean;
-  onSendOption?: (option: string) => void;
-}
+  interface HfDropdownMenuProps {
+    options?: MenuOption[];
+    menuIcon?: FunctionalComponent;
+    disabled?: boolean;
+    onSendOption?: (option: string) => void;
+  }
 
-const props = withDefaults(defineProps<HfDropdownMenuProps>(), {
-  contentData: undefined,
-  disabled: false,
-});
+  const props = withDefaults(defineProps<HfDropdownMenuProps>(), {
+    contentData: undefined,
+    disabled: false,
+  });
 
-const { isOpen, anchor, popper, popperStyle, changeToolTipVisibility } =
-  usePopper('dropdownMenu');
+  const { isOpen, anchor, popper, popperStyle, changeToolTipVisibility } =
+    usePopper('dropdownMenu');
 
-const transition = getTransition('scaleAndFade');
+  const transition = getTransition('scaleAndFade');
 
-const getMenuIcon = computed(() => props.menuIcon || Bars3CenterLeftIcon);
+  const getMenuIcon = computed(() => props.menuIcon || Bars3CenterLeftIcon);
 
-const handleClick = () => {
-  if (isOpen.value) {
+  const handleClick = () => {
+    if (isOpen.value) {
+      changeToolTipVisibility('close');
+      return;
+    }
+    changeToolTipVisibility('open');
+  };
+
+  const handleClickOption = (option: string) => {
+    if (props.onSendOption) {
+      props.onSendOption(option);
+    }
     changeToolTipVisibility('close');
-    return;
-  }
-  changeToolTipVisibility('open');
-};
-
-const handleClickOption = (option: string) => {
-  if (props.onSendOption) {
-    props.onSendOption(option);
-  }
-  changeToolTipVisibility('close');
-};
+  };
 </script>
 
 <template>
   <div class="inline-block w-fit">
-    <div ref="anchor" class="inline-flex items-center w-fit" aria-describedby="tooltip">
-      <hf-icon-button :icon="getMenuIcon" @click="handleClick" no-style :disabled="props.disabled"
-        class="p-2 text-black bg-gray-200 border rounded-md active:scale-95" type="button" />
+    <div
+      ref="anchor"
+      class="inline-flex items-center w-fit"
+      aria-describedby="tooltip"
+    >
+      <hf-icon-button
+        :icon="getMenuIcon"
+        @click="handleClick"
+        no-style
+        :disabled="props.disabled"
+        class="p-2 text-black bg-gray-200 border rounded-md active:scale-95"
+        type="button"
+      />
     </div>
     <teleport to="body">
-      <transition :enter-active-class="transition.enterActiveClass" :enter-from-class="transition.enterFromClass"
-        :enter-to-class="transition.enterToClass" :leave-active-class="transition.leaveActiveClass"
-        :leave-from-class="transition.leaveFromClass" :leave-to-class="transition.leaveToClass">
-        <div v-if="isOpen" ref="popper" v-on-click-outside="[
-          () => changeToolTipVisibility('close'),
-          { ignore: [anchor] },
-        ]" :style="popperStyle"
-          class="absolute z-50 flex flex-col w-40 p-1 text-white border border-gray-300 rounded-md shadow-lg">
-
+      <transition
+        :enter-active-class="transition.enterActiveClass"
+        :enter-from-class="transition.enterFromClass"
+        :enter-to-class="transition.enterToClass"
+        :leave-active-class="transition.leaveActiveClass"
+        :leave-from-class="transition.leaveFromClass"
+        :leave-to-class="transition.leaveToClass"
+      >
+        <div
+          v-if="isOpen"
+          ref="popper"
+          v-on-click-outside="[
+            () => changeToolTipVisibility('close'),
+            { ignore: [anchor] },
+          ]"
+          :style="popperStyle"
+          class="absolute z-50 flex flex-col w-40 p-1 text-white border border-gray-300 rounded-md shadow-lg"
+        >
           <slot v-if="!props.options" />
-          <div v-else class="flex flex-col w-full gap-y-1.5">
-            <div v-for="option in props.options" :key="option.optionKey"
-              class="flex items-center p-2 text-black rounded-md gap-x-1.5 hover:cursor-pointer hover:bg-slate-100 "
-              @click="handleClickOption(option.optionKey)">
-              <component :is="option.icon"
-                class="w-5 h-5 transition-all duration-200 ease-in-out sm:w-4 sm:h-4 xs:w-4 xs:h-4 shrink-0" />
-              <span class="flex-1 text-sm truncate transition-all ease-in-out sm:text-xs xs:text-xs dutarion-200">{{
-                option.optionLabel }} </span>
+          <div
+            v-else
+            class="flex flex-col w-full gap-y-1.5"
+          >
+            <div
+              v-for="option in props.options"
+              :key="option.optionKey"
+              class="flex items-center p-2 text-black rounded-md gap-x-1.5 hover:cursor-pointer hover:bg-slate-100"
+              @click="handleClickOption(option.optionKey)"
+            >
+              <component
+                :is="option.icon"
+                class="w-5 h-5 transition-all duration-200 ease-in-out sm:w-4 sm:h-4 xs:w-4 xs:h-4 shrink-0"
+              />
+              <span
+                class="flex-1 text-sm truncate transition-all ease-in-out sm:text-xs xs:text-xs dutarion-200"
+                >{{ option.optionLabel }}
+              </span>
             </div>
           </div>
         </div>
