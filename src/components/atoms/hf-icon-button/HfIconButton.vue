@@ -43,7 +43,7 @@
   >
     <component
       :is="props.icon || EyeIcon"
-      class="w-5 h-5 transition-all duration-200 ease-in-out sm:w-4 sm:h-4 xs:w-4 xs:h-4 shrink-0"
+      class="transition-all duration-200 ease-in-out size-5 sm:size-4 xs:size-4 shrink-0"
     />
   </button>
 </template>

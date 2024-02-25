@@ -1,5 +1,71 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+  import { ColorVariantExtra } from '@/types/global.types';
+  import { Switch, SwitchGroup, SwitchLabel } from '@headlessui/vue';
+  import { FunctionalComponent } from 'vue';
+
+  defineOptions({ inheritAttrs: false });
+
+  interface HfToggleProps {
+    label?: string;
+    help?: string;
+    color?: ColorVariantExtra;
+    dotIcon?: {
+      enabled: FunctionalComponent;
+      disabled: FunctionalComponent;
+    };
+  }
+
+  const props = defineProps<HfToggleProps>();
+  const enabled = defineModel<boolean>('enabled', { required: true });
+</script>
 
 <template>
-  <div>Toggle</div>
+  <SwitchGroup>
+    <div class="inline-flex items-center">
+      <Switch
+        v-model="enabled"
+        :id="($attrs.id as string) || undefined"
+        :class="[
+          {
+            'bg-blue-500': props.color === 'blue' && enabled,
+            'bg-blue-500/50': props.color === 'blue' && !enabled,
+          },
+          {
+            'bg-yellow-500': props.color === 'yellow' && enabled,
+            'bg-yellow-500/50': props.color === 'yellow' && !enabled,
+          },
+          {
+            'bg-violet-500': props.color === 'violet' && enabled,
+            'bg-violet-500/50': props.color === 'violet' && !enabled,
+          },
+        ]"
+        class="relative inline-flex h-[1.5rem] w-[3rem] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-0"
+      >
+        <span class="sr-only">Use setting</span>
+        <div
+          aria-hidden="true"
+          :class="enabled ? 'translate-x-[1.5rem]' : 'translate-x-0'"
+          class="pointer-events-none inline-flex items-center justify-center size-[1.25rem] rounded-full bg-white shadow-lg ring-0 transition-all duration-200 ease-in-out"
+        >
+          <component
+            v-if="props.dotIcon"
+            :is="enabled ? props.dotIcon.enabled : props.dotIcon.disabled"
+            class="transition-all duration-200 ease-in-out size-3"
+          />
+        </div>
+      </Switch>
+
+      <div
+        v-if="props.label || props.help"
+        class="inline-flex justify-center ml-1.5 gap-x-1"
+      >
+        <SwitchLabel
+          :id="($attrs.id as string) || undefined"
+          class="text-sm transition-all duration-200 ease-in-out sm:text-xs xs:text-xs hover:cursor-pointer"
+        >
+          {{ props.label }}
+        </SwitchLabel>
+      </div>
+    </div>
+  </SwitchGroup>
 </template>

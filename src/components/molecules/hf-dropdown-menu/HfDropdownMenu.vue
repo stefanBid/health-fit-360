@@ -80,7 +80,7 @@
             { ignore: [anchor] },
           ]"
           :style="popperStyle"
-          class="absolute z-50 flex flex-col w-40 p-1 text-white border border-gray-300 rounded-md shadow-lg"
+          class="absolute z-50 flex flex-col w-40 p-1 text-white bg-white border border-gray-300 rounded-md shadow-lg"
         >
           <slot v-if="!props.options" />
           <div
