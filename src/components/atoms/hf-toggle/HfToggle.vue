@@ -1,22 +1,22 @@
 <script setup lang="ts">
-  import { ColorVariantExtra } from '@/types/global.types';
-  import { Switch, SwitchGroup, SwitchLabel } from '@headlessui/vue';
-  import { FunctionalComponent } from 'vue';
+import { ColorVariantExtra } from '@/types/global.types';
+import { Switch, SwitchGroup, SwitchLabel } from '@headlessui/vue';
+import { FunctionalComponent } from 'vue';
 
-  defineOptions({ inheritAttrs: false });
+defineOptions({ inheritAttrs: false });
 
-  interface HfToggleProps {
-    label?: string;
-    help?: string;
-    color?: ColorVariantExtra;
-    dotIcon?: {
-      enabled: FunctionalComponent;
-      disabled: FunctionalComponent;
-    };
-  }
+interface HfToggleProps {
+  label?: string;
+  help?: string;
+  color?: ColorVariantExtra;
+  dotIcon?: {
+    enabled: FunctionalComponent;
+    disabled: FunctionalComponent;
+  };
+}
 
-  const props = defineProps<HfToggleProps>();
-  const enabled = defineModel<boolean>('enabled', { required: true });
+const props = defineProps<HfToggleProps>();
+const enabled = defineModel<boolean>('enabled', { required: true });
 </script>
 
 <template>

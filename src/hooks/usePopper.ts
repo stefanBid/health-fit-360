@@ -11,7 +11,7 @@ import {
 } from '@floating-ui/vue';
 import type { Placement } from '@floating-ui/dom';
 
-type PopperType = 'dropdownMenu' | 'helpInfo' | 'regexEditor' | 'combobox';
+type PopperType = 'dropdownMenu' | 'helpInfo' | 'combobox';
 
 // This helper function is used to configure the popper settings for each popper type in complete security
 const configurePopperSetting = (
@@ -27,7 +27,6 @@ const configurePopperSetting = (
 const popperSettings = {
   dropdownMenu: configurePopperSetting('bottom-end', 4, false),
   helpInfo: configurePopperSetting('top', 10, true),
-  regexEditor: configurePopperSetting('bottom', 4, false),
   combobox: configurePopperSetting('bottom', 4, false),
 };
 

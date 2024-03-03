@@ -1,50 +1,50 @@
 <script setup lang="ts">
-  import { usePopper } from '@/hooks';
-  import { getTransition } from '@/utils';
-  import { vOnClickOutside } from '@vueuse/components';
-  import { HfIconButton } from '@/components';
-  import { Bars3CenterLeftIcon } from '@heroicons/vue/24/solid';
-  import { computed, type FunctionalComponent } from 'vue';
+import { usePopper } from '@/hooks';
+import { getTransition } from '@/utils';
+import { vOnClickOutside } from '@vueuse/components';
+import { HfIconButton } from '@/components';
+import { Bars3CenterLeftIcon } from '@heroicons/vue/24/solid';
+import { computed, type FunctionalComponent } from 'vue';
 
-  interface MenuOption {
-    optionKey: string;
-    optionLabel: string;
-    icon: FunctionalComponent;
-  }
+interface MenuOption {
+  optionKey: string;
+  optionLabel: string;
+  icon: FunctionalComponent;
+}
 
-  interface HfDropdownMenuProps {
-    options?: MenuOption[];
-    menuIcon?: FunctionalComponent;
-    disabled?: boolean;
-    onSendOption?: (option: string) => void;
-  }
+interface HfDropdownMenuProps {
+  options?: MenuOption[];
+  menuIcon?: FunctionalComponent;
+  disabled?: boolean;
+  onSendOption?: (option: string) => void;
+}
 
-  const props = withDefaults(defineProps<HfDropdownMenuProps>(), {
-    contentData: undefined,
-    disabled: false,
-  });
+const props = withDefaults(defineProps<HfDropdownMenuProps>(), {
+  contentData: undefined,
+  disabled: false,
+});
 
-  const { isOpen, anchor, popper, popperStyle, changeToolTipVisibility } =
-    usePopper('dropdownMenu');
+const { isOpen, anchor, popper, popperStyle, changeToolTipVisibility } =
+  usePopper('dropdownMenu');
 
-  const transition = getTransition('scaleAndFade');
+const transition = getTransition('scaleAndFade');
 
-  const getMenuIcon = computed(() => props.menuIcon || Bars3CenterLeftIcon);
+const getMenuIcon = computed(() => props.menuIcon || Bars3CenterLeftIcon);
 
-  const handleClick = () => {
-    if (isOpen.value) {
-      changeToolTipVisibility('close');
-      return;
-    }
-    changeToolTipVisibility('open');
-  };
-
-  const handleClickOption = (option: string) => {
-    if (props.onSendOption) {
-      props.onSendOption(option);
-    }
+const handleClick = () => {
+  if (isOpen.value) {
     changeToolTipVisibility('close');
-  };
+    return;
+  }
+  changeToolTipVisibility('open');
+};
+
+const handleClickOption = (option: string) => {
+  if (props.onSendOption) {
+    props.onSendOption(option);
+  }
+  changeToolTipVisibility('close');
+};
 </script>
 
 <template>

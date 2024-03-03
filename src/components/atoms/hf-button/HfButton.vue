@@ -1,19 +1,19 @@
 <script setup lang="ts">
-  import type { ColorVariantExtra } from '@/types/global.types';
+import type { ColorVariantExtra } from '@/types/global.types';
 
-  interface HfButtonProps {
-    type?: 'button' | 'submit' | 'reset';
-    color?: ColorVariantExtra;
-    disabled?: boolean;
-    noStyle?: boolean;
-  }
+interface HfButtonProps {
+  type?: 'button' | 'submit' | 'reset';
+  color?: ColorVariantExtra;
+  disabled?: boolean;
+  noStyle?: boolean;
+}
 
-  const props = withDefaults(defineProps<HfButtonProps>(), {
-    type: 'button',
-    color: 'blue',
-    disabled: false,
-    noStyle: false,
-  });
+const props = withDefaults(defineProps<HfButtonProps>(), {
+  type: 'button',
+  color: 'blue',
+  disabled: false,
+  noStyle: false,
+});
 </script>
 
 <template>

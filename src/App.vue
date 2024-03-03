@@ -1,32 +1,43 @@
 <script setup lang="ts">
-  import {
-    HfButton,
-    HfIconButton,
-    HfDropdownMenu,
-    HfToggle,
-    HfInput,
-  } from '@/components';
-  import {
-    TrashIcon,
-    XMarkIcon,
-    PlusCircleIcon,
-    SunIcon,
-    MoonIcon,
-  } from '@heroicons/vue/24/outline';
+import {
+  HfButton,
+  HfIconButton,
+  HfDropdownMenu,
+  HfToggle,
+  HfInput,
+  HfCombobox,
+} from '@/components';
+import {
+  TrashIcon,
+  XMarkIcon,
+  PlusCircleIcon,
+  SunIcon,
+  MoonIcon,
+} from '@heroicons/vue/24/outline';
 
-  import { ref } from 'vue';
+import { ref } from 'vue';
 
-  const test = (option: string) => {
-    console.log(option);
-  };
+const test = (option: string) => {
+  console.log(option);
+};
 
-  const toggle1 = ref(true);
-  const toggle2 = ref(true);
-  const toggle3 = ref(true);
+const toggle1 = ref(true);
+const toggle2 = ref(true);
+const toggle3 = ref(true);
 
-  const inputValue = ref('');
-  const inputValue2 = ref('');
-  const inputValue3 = ref(0);
+const inputValue = ref('');
+const inputValue2 = ref('');
+const inputValue3 = ref(0);
+
+const items = [
+  { label: 'Option 1', value: '1' },
+  { label: 'Option 2', value: '2' },
+  { label: 'Option 3', value: '3' },
+];
+
+const combo1 = ref('');
+const combo2 = ref('');
+const combo3 = ref('');
 </script>
 
 <template>
@@ -160,12 +171,6 @@
               color="blue"
             />
           </template>
-          <template #persistent>
-            <hf-icon-button
-              no-style
-              :icon="XMarkIcon"
-            />
-          </template>
         </hf-input>
         <hf-input
           label="Input"
@@ -200,6 +205,70 @@
             />
           </template>
         </hf-input>
+      </div>
+    </div>
+
+    <div class="p-2">
+      <h1>Combobox</h1>
+      {{ combo1 }}, {{ combo2 }}, {{ combo3 }}
+      <div class="flex flex-col gap-y-4">
+        <HfCombobox
+          :items="items"
+          v-model:value-selected="combo1"
+          id="combobox-1"
+          :disabled="!toggle1"
+          color="blue"
+          label="Combobox-1"
+          display-key="label"
+          value-key="value"
+          addIfNotFoundEnabled
+        >
+          <template #toggle>
+            <hf-toggle
+              id="toggle-combobox-1"
+              v-model:enabled="toggle1"
+              color="blue"
+            />
+          </template>
+        </HfCombobox>
+
+        <HfCombobox
+          :items="items"
+          v-model:value-selected="combo2"
+          id="combobox-2"
+          :disabled="!toggle2"
+          color="yellow"
+          display-key="label"
+          value-key="value"
+          addIfNotFoundEnabled
+        >
+          <template #toggle>
+            <hf-toggle
+              id="toggle-combobox-2"
+              v-model:enabled="toggle2"
+              color="yellow"
+            />
+          </template>
+        </HfCombobox>
+
+        <HfCombobox
+          :items="items"
+          v-model:value-selected="combo3"
+          id="combobox-3"
+          :disabled="!toggle3"
+          color="violet"
+          display-key="label"
+          value-key="value"
+          addIfNotFoundEnabled
+        >
+          <template #toggle>
+            <hf-toggle
+              id="toggle-combobox-3"
+              v-model:enabled="toggle3"
+              color="violet"
+            />
+          </template>
+        </HfCombobox>
       </div>
     </div>
   </div>

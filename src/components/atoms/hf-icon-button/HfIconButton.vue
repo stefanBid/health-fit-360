@@ -1,23 +1,23 @@
 <script setup lang="ts">
-  import type { ColorVariantSettings } from '@/types/global.types';
-  import type { FunctionalComponent } from 'vue';
-  import { EyeIcon } from '@heroicons/vue/24/solid';
+import type { ColorVariantSettings } from '@/types/global.types';
+import type { FunctionalComponent } from 'vue';
+import { EyeIcon } from '@heroicons/vue/24/solid';
 
-  defineOptions({ inheritAttrs: false });
+defineOptions({ inheritAttrs: false });
 
-  interface HfIconButtonProps {
-    color?: ColorVariantSettings;
-    icon?: FunctionalComponent;
-    disabled?: boolean;
-    noStyle?: boolean;
-  }
+interface HfIconButtonProps {
+  color?: ColorVariantSettings;
+  icon?: FunctionalComponent;
+  disabled?: boolean;
+  noStyle?: boolean;
+}
 
-  const props = withDefaults(defineProps<HfIconButtonProps>(), {
-    color: 'green',
-    icon: undefined,
-    disabled: false,
-    noStyle: false,
-  });
+const props = withDefaults(defineProps<HfIconButtonProps>(), {
+  color: 'green',
+  icon: undefined,
+  disabled: false,
+  noStyle: false,
+});
 </script>
 
 <template>

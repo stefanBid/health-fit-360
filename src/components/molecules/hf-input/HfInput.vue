@@ -1,42 +1,39 @@
 <script setup lang="ts">
-  import { generateId } from '@/utils';
-  import type { ColorVariantExtra } from '@/types/global.types';
-  import { useSlots } from 'vue';
+import { generateId } from '@/utils';
+import type { ColorVariantExtra } from '@/types/global.types';
 
-  interface HfInputProps {
-    color?: ColorVariantExtra;
-    type?: 'text' | 'number';
-    unit?: 'cm' | 'bpm';
-    label?: string;
-    help?: string;
-    placeholder?: string;
-    disabled?: boolean;
-  }
+interface HfInputProps {
+  color?: ColorVariantExtra;
+  type?: 'text' | 'number';
+  unit?: 'cm' | 'bpm';
+  label?: string;
+  help?: string;
+  placeholder?: string;
+  disabled?: boolean;
+}
 
-  const props = withDefaults(defineProps<HfInputProps>(), {
-    color: 'blue',
-    type: 'text',
-    unit: undefined,
-    label: undefined,
-    help: undefined,
-    placeholder: 'Insert text here...',
-    disabled: false,
-  });
+const props = withDefaults(defineProps<HfInputProps>(), {
+  color: 'blue',
+  type: 'text',
+  unit: undefined,
+  label: undefined,
+  help: undefined,
+  placeholder: 'Insert text here...',
+  disabled: false,
+});
 
-  const inputValue = defineModel<string | number>('inputValue', {
-    required: true,
-  });
+const inputValue = defineModel<string | number>('inputValue', {
+  required: true,
+});
 
-  defineOptions({ inheritAttrs: false });
+defineOptions({ inheritAttrs: false });
 
-  const inputId = `input-${generateId()}`;
+const inputId = `input-${generateId()}`;
 
-  const UNIT_MAP = {
-    cm: 'cm',
-    bpm: 'bpm',
-  };
-
-  const slots = useSlots();
+const UNIT_MAP = {
+  cm: 'cm',
+  bpm: 'bpm',
+};
 </script>
 
 <template>
@@ -72,18 +69,13 @@
             'text-black/50': props.disabled,
             'opacity-60': props.disabled,
             'pr-10': props.unit,
-            'pr-8': !props.unit && slots.persistent,
-            'pr-2': !props.unit && !slots.persistent,
+            'pr-2': !props.unit,
           },
         ]"
       />
       <div class="absolute inset-y-0 right-0 flex items-center m-2">
-        <slot
-          v-if="!props.unit"
-          name="persistent"
-        />
         <span
-          v-else
+          v-if="props.unit"
           class="text-gray-500"
         >
           {{ UNIT_MAP[props.unit] }}
