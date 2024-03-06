@@ -23,8 +23,8 @@ const enabled = defineModel<boolean>('enabled', { required: true });
   <SwitchGroup>
     <div class="inline-flex items-center">
       <Switch
-        v-model="enabled"
         :id="($attrs.id as string) || undefined"
+        v-model="enabled"
         :class="[
           {
             'bg-blue-500': props.color === 'blue' && enabled,
@@ -48,8 +48,8 @@ const enabled = defineModel<boolean>('enabled', { required: true });
           class="pointer-events-none inline-flex items-center justify-center size-[1.25rem] rounded-full bg-white shadow-lg ring-0 transition-all duration-200 ease-in-out"
         >
           <component
-            v-if="props.dotIcon"
             :is="enabled ? props.dotIcon.enabled : props.dotIcon.disabled"
+            v-if="props.dotIcon"
             class="transition-all duration-200 ease-in-out size-3"
           />
         </div>

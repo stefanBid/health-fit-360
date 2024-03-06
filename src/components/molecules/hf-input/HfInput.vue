@@ -13,17 +13,17 @@ interface HfInputProps {
 }
 
 const props = withDefaults(defineProps<HfInputProps>(), {
-  color: 'blue',
-  type: 'text',
-  unit: undefined,
-  label: undefined,
-  help: undefined,
-  placeholder: 'Insert text here...',
-  disabled: false,
+	color: 'blue',
+	type: 'text',
+	unit: undefined,
+	label: undefined,
+	help: undefined,
+	placeholder: 'Insert text here...',
+	disabled: false,
 });
 
 const inputValue = defineModel<string | number>('inputValue', {
-  required: true,
+	required: true,
 });
 
 defineOptions({ inheritAttrs: false });
@@ -31,15 +31,15 @@ defineOptions({ inheritAttrs: false });
 const inputId = `input-${generateId()}`;
 
 const UNIT_MAP = {
-  cm: 'cm',
-  bpm: 'bpm',
+	cm: 'cm',
+	bpm: 'bpm',
 };
 </script>
 
 <template>
   <div class="flex flex-col gap-y-1.5">
     <div class="inline-flex items-center">
-      <slot name="toggle" />
+      <slot name="toggle"></slot>
       <label
         v-if="props.label"
         :for="($attrs.id as string) || inputId"
@@ -51,11 +51,11 @@ const UNIT_MAP = {
     </div>
     <div class="relative text-sm xs:text-xs sm:text-xs">
       <input
+        :id="($attrs.id as string) || inputId"
         v-model="inputValue"
         :type="props.type"
         :placeholder="props.placeholder"
         :disabled="props.disabled"
-        :id="($attrs.id as string) || inputId"
         class="w-full py-2 pl-2 truncate transition-all duration-200 ease-in-out border border-gray-300 rounded-md outline-none bg-slate-100 focus:outline-none focus:ring-1"
         :class="[
           {

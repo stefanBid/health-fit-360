@@ -13,10 +13,10 @@ interface HfIconButtonProps {
 }
 
 const props = withDefaults(defineProps<HfIconButtonProps>(), {
-  color: 'green',
-  icon: undefined,
-  disabled: false,
-  noStyle: false,
+	color: 'green',
+	icon: undefined,
+	disabled: false,
+	noStyle: false,
 });
 </script>
 

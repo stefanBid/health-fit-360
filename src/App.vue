@@ -1,24 +1,24 @@
 <script setup lang="ts">
 import {
-  HfButton,
-  HfIconButton,
-  HfDropdownMenu,
-  HfToggle,
-  HfInput,
-  HfCombobox,
+	HfButton,
+	HfIconButton,
+	HfDropdownMenu,
+	HfToggle,
+	HfInput,
+	HfCombobox,
 } from '@/components';
 import {
-  TrashIcon,
-  XMarkIcon,
-  PlusCircleIcon,
-  SunIcon,
-  MoonIcon,
+	TrashIcon,
+	XMarkIcon,
+	PlusCircleIcon,
+	SunIcon,
+	MoonIcon,
 } from '@heroicons/vue/24/outline';
 
 import { ref } from 'vue';
 
 const test = (option: string) => {
-  console.log(option);
+	console.log(option);
 };
 
 const toggle1 = ref(true);
@@ -30,9 +30,9 @@ const inputValue2 = ref('');
 const inputValue3 = ref(0);
 
 const items = [
-  { label: 'Option 1', value: '1' },
-  { label: 'Option 2', value: '2' },
-  { label: 'Option 3', value: '3' },
+	{ label: 'Option 1', value: '1' },
+	{ label: 'Option 2', value: '2' },
+	{ label: 'Option 3', value: '3' },
 ];
 
 const combo1 = ref('');
@@ -45,15 +45,24 @@ const combo3 = ref('');
     <div class="p-2">
       <h1>Button</h1>
       <div class="space-x-2">
-        <hf-button id="btn-1">Click me</hf-button>
-        <hf-button color="yellow">Click me</hf-button>
-        <hf-button color="violet">Click me</hf-button>
-        <hf-button disabled>Click me</hf-button>
+        <hf-button id="btn-1">
+          Click me
+        </hf-button>
+        <hf-button color="yellow">
+          Click me
+        </hf-button>
+        <hf-button color="violet">
+          Click me
+        </hf-button>
+        <hf-button disabled>
+          Click me
+        </hf-button>
         <hf-button
-          noStyle
+          no-style
           class="p-2 border-b border-b-green-500 hover:scale-x-75"
-          >Click me</hf-button
         >
+          Click me
+        </hf-button>
       </div>
     </div>
     <div class="p-2">
@@ -109,7 +118,7 @@ const combo3 = ref('');
           ]"
         />
         <HfDropdownMenu
-          :menuIcon="PlusCircleIcon"
+          :menu-icon="PlusCircleIcon"
           :options="[
             {
               optionKey: '1',
@@ -127,7 +136,7 @@ const combo3 = ref('');
               icon: XMarkIcon,
             },
           ]"
-          :onSendOption="(option) => test(option)"
+          :on-send-option="(option) => test(option)"
         />
       </div>
     </div>
@@ -136,20 +145,20 @@ const combo3 = ref('');
       <div class="flex items-center gap-x-2">
         <hf-toggle
           id="toggle-1"
-          label="Toggle"
           v-model:enabled="toggle1"
+          label="Toggle"
           color="blue"
         />
         <hf-toggle
           id="toggle-2"
-          label="Toggle"
           v-model:enabled="toggle2"
+          label="Toggle"
           color="yellow"
         />
         <hf-toggle
           id="toggle-3"
-          label="Toggle"
           v-model:enabled="toggle3"
+          label="Toggle"
           color="violet"
           :dot-icon="{ enabled: SunIcon, disabled: MoonIcon }"
         />
@@ -159,9 +168,9 @@ const combo3 = ref('');
       <h1>Input</h1>
       <div class="flex flex-col gap-y-4">
         <hf-input
-          label="Input"
-          v-model:inputValue="inputValue"
           id="input-1"
+          v-model:inputValue="inputValue"
+          label="Input"
           :disabled="!toggle1"
         >
           <template #toggle>
@@ -173,9 +182,9 @@ const combo3 = ref('');
           </template>
         </hf-input>
         <hf-input
-          label="Input"
-          v-model:inputValue="inputValue2"
           id="input-2"
+          v-model:inputValue="inputValue2"
+          label="Input"
           :disabled="!toggle2"
           color="yellow"
         >
@@ -189,9 +198,9 @@ const combo3 = ref('');
         </hf-input>
         {{ inputValue3 }}
         <hf-input
-          label="Input"
-          v-model:inputValue="inputValue3"
           id="input-3"
+          v-model:inputValue="inputValue3"
+          label="Input"
           :disabled="!toggle3"
           color="violet"
           type="number"
@@ -213,15 +222,15 @@ const combo3 = ref('');
       {{ combo1 }}, {{ combo2 }}, {{ combo3 }}
       <div class="flex flex-col gap-y-4">
         <HfCombobox
-          :items="items"
-          v-model:value-selected="combo1"
           id="combobox-1"
+          v-model:value-selected="combo1"
+          :items="items"
           :disabled="!toggle1"
           color="blue"
           label="Combobox-1"
           display-key="label"
           value-key="value"
-          addIfNotFoundEnabled
+          add-if-not-found-enabled
         >
           <template #toggle>
             <hf-toggle
@@ -233,14 +242,14 @@ const combo3 = ref('');
         </HfCombobox>
 
         <HfCombobox
-          :items="items"
-          v-model:value-selected="combo2"
           id="combobox-2"
+          v-model:value-selected="combo2"
+          :items="items"
           :disabled="!toggle2"
           color="yellow"
           display-key="label"
           value-key="value"
-          addIfNotFoundEnabled
+          add-if-not-found-enabled
         >
           <template #toggle>
             <hf-toggle
@@ -252,14 +261,14 @@ const combo3 = ref('');
         </HfCombobox>
 
         <HfCombobox
-          :items="items"
-          v-model:value-selected="combo3"
           id="combobox-3"
+          v-model:value-selected="combo3"
+          :items="items"
           :disabled="!toggle3"
           color="violet"
           display-key="label"
           value-key="value"
-          addIfNotFoundEnabled
+          add-if-not-found-enabled
         >
           <template #toggle>
             <hf-toggle

@@ -9,10 +9,10 @@ interface HfButtonProps {
 }
 
 const props = withDefaults(defineProps<HfButtonProps>(), {
-  type: 'button',
-  color: 'blue',
-  disabled: false,
-  noStyle: false,
+	type: 'button',
+	color: 'blue',
+	disabled: false,
+	noStyle: false,
 });
 </script>
 
@@ -39,6 +39,6 @@ const props = withDefaults(defineProps<HfButtonProps>(), {
         : 'cursor-pointer opacity-100',
     ]"
   >
-    <slot />
+    <slot></slot>
   </button>
 </template>

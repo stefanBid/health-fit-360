@@ -20,8 +20,10 @@ interface HfDropdownMenuProps {
 }
 
 const props = withDefaults(defineProps<HfDropdownMenuProps>(), {
-  contentData: undefined,
-  disabled: false,
+	options: undefined,
+	menuIcon: undefined,
+	disabled: false,
+	onSendOption: undefined,
 });
 
 const { isOpen, anchor, popper, popperStyle, changeToolTipVisibility } =
@@ -32,18 +34,18 @@ const transition = getTransition('scaleAndFade');
 const getMenuIcon = computed(() => props.menuIcon || Bars3CenterLeftIcon);
 
 const handleClick = () => {
-  if (isOpen.value) {
-    changeToolTipVisibility('close');
-    return;
-  }
-  changeToolTipVisibility('open');
+	if (isOpen.value) {
+		changeToolTipVisibility('close');
+		return;
+	}
+	changeToolTipVisibility('open');
 };
 
 const handleClickOption = (option: string) => {
-  if (props.onSendOption) {
-    props.onSendOption(option);
-  }
-  changeToolTipVisibility('close');
+	if (props.onSendOption) {
+		props.onSendOption(option);
+	}
+	changeToolTipVisibility('close');
 };
 </script>
 
@@ -56,11 +58,11 @@ const handleClickOption = (option: string) => {
     >
       <hf-icon-button
         :icon="getMenuIcon"
-        @click="handleClick"
         no-style
         :disabled="props.disabled"
         class="p-2 text-black bg-gray-200 border rounded-md active:scale-95"
         type="button"
+        @click="handleClick"
       />
     </div>
     <teleport to="body">
@@ -82,7 +84,7 @@ const handleClickOption = (option: string) => {
           :style="popperStyle"
           class="absolute z-50 flex flex-col w-40 p-1 text-white bg-white border border-gray-300 rounded-md shadow-lg"
         >
-          <slot v-if="!props.options" />
+          <slot v-if="!props.options"></slot>
           <div
             v-else
             class="flex flex-col w-full gap-y-1.5"
@@ -99,7 +101,7 @@ const handleClickOption = (option: string) => {
               />
               <span
                 class="flex-1 text-sm truncate transition-all ease-in-out sm:text-xs xs:text-xs dutarion-200"
-                >{{ option.optionLabel }}
+              >{{ option.optionLabel }}
               </span>
             </div>
           </div>

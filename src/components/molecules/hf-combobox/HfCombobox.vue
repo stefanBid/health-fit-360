@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import {
-  ref,
-  nextTick,
-  computed,
-  onUnmounted,
-  onMounted,
-  onBeforeMount,
+	ref,
+	nextTick,
+	computed,
+	onUnmounted,
+	onMounted,
+	onBeforeMount,
 } from 'vue';
 import { generateId, getTransition } from '@/utils';
 import { useFocus } from '@vueuse/core';
@@ -16,6 +16,7 @@ import type { ColorVariantExtra } from '@/types/global.types';
 import HfIconButton from '@/components/atoms/hf-icon-button/HfIconButton.vue';
 
 interface ComboboxProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   items: any[];
   label?: string;
   help?: string;
@@ -33,14 +34,14 @@ interface ItemOption {
   notFound: boolean;
 }
 const props = withDefaults(defineProps<ComboboxProps>(), {
-  label: undefined,
-  help: undefined,
-  disabled: false,
-  placeholder: 'Insert text here...',
-  valueKey: '',
-  displayKey: '',
-  color: 'blue',
-  addIfNotFoundEnabled: false,
+	label: undefined,
+	help: undefined,
+	disabled: false,
+	placeholder: 'Insert text here...',
+	valueKey: '',
+	displayKey: '',
+	color: 'blue',
+	addIfNotFoundEnabled: false,
 });
 
 defineOptions({ inheritAttrs: false });
@@ -60,133 +61,133 @@ const { isOpen, anchor, popper, popperStyle, changeToolTipVisibility } =
   usePopper('combobox');
 
 const inputValue = computed({
-  get: () => {
-    if (isOpen.value) {
-      return query.value;
-    }
-    return selectableOption.value;
-  },
-  set: (val) => {
-    query.value = val;
-  },
+	get: () => {
+		if (isOpen.value) {
+			return query.value;
+		}
+		return selectableOption.value;
+	},
+	set: (val) => {
+		query.value = val;
+	},
 });
 
 const onOpenCloseCombobox = (op: 'open' | 'close') => {
-  changeToolTipVisibility(op);
-  if (op === 'close') {
-    focused.value = false;
-  } else {
-    focused.value = true;
-    query.value = '';
-  }
+	changeToolTipVisibility(op);
+	if (op === 'close') {
+		focused.value = false;
+	} else {
+		focused.value = true;
+		query.value = '';
+	}
 
-  nextTick(() => {
-    if (anchor.value && popper.value) {
-      const anchorWidth = anchor.value.offsetWidth;
-      popper.value.style.width = `${anchorWidth}px`;
-    }
-  });
+	nextTick(() => {
+		if (anchor.value && popper.value) {
+			const anchorWidth = anchor.value.offsetWidth;
+			popper.value.style.width = `${anchorWidth}px`;
+		}
+	});
 };
 
 const normalizedPropsItems = computed<ItemOption[]>(() =>
-  props.items.map((item) => ({
-    label: item[props.displayKey],
-    value: item[props.valueKey],
-    notFound: false,
-  })),
+	props.items.map((item) => ({
+		label: item[props.displayKey],
+		value: item[props.valueKey],
+		notFound: false,
+	})),
 );
 
 const filteredItemsOption = computed<ItemOption[]>(() => {
-  const combinedItems = [...normalizedPropsItems.value, ...newItems.value];
+	const combinedItems = [...normalizedPropsItems.value, ...newItems.value];
 
-  const filtered = combinedItems.filter((item) =>
-    item.label.toLowerCase().includes(query.value.toLowerCase()),
-  );
+	const filtered = combinedItems.filter((item) =>
+		item.label.toLowerCase().includes(query.value.toLowerCase()),
+	);
 
-  if (
-    props.addIfNotFoundEnabled &&
+	if (
+		props.addIfNotFoundEnabled &&
     filtered.length === 0 &&
     query.value.trim() !== ''
-  ) {
-    filtered.push({
-      label: query.value,
-      value: query.value,
-      notFound: true,
-    });
-  }
+	) {
+		filtered.push({
+			label: query.value,
+			value: query.value,
+			notFound: true,
+		});
+	}
 
-  return filtered;
+	return filtered;
 });
 
 const onSelectComboboxItemOption = (item: ItemOption) => {
-  if (item.notFound && newItems.value.indexOf(item) === -1) return;
+	if (item.notFound && newItems.value.indexOf(item) === -1) return;
 
-  if (selectableOption.value !== item.label) {
-    valueSelected.value = item.value;
-    selectableOption.value = item.label;
-    onOpenCloseCombobox('close');
-  } else {
-    valueSelected.value = '';
-    selectableOption.value = '';
-  }
+	if (selectableOption.value !== item.label) {
+		valueSelected.value = item.value;
+		selectableOption.value = item.label;
+		onOpenCloseCombobox('close');
+	} else {
+		valueSelected.value = '';
+		selectableOption.value = '';
+	}
 };
 
 const addNewItemOption = (newItem: ItemOption) => {
-  const isDuplicate = newItems.value.some(
-    (item) => item.value === newItem.value,
-  );
-  if (isDuplicate) return;
+	const isDuplicate = newItems.value.some(
+		(item) => item.value === newItem.value,
+	);
+	if (isDuplicate) return;
 
-  newItems.value.push({
-    ...newItem,
-    notFound: false,
-  });
+	newItems.value.push({
+		...newItem,
+		notFound: false,
+	});
 
-  valueSelected.value = newItem.value;
-  selectableOption.value = newItem.label;
-  onOpenCloseCombobox('close');
+	valueSelected.value = newItem.value;
+	selectableOption.value = newItem.label;
+	onOpenCloseCombobox('close');
 };
 
 onMounted(() => {
-  if (anchor.value) {
-    resizeObserver = new ResizeObserver((entries) => {
-      entries.forEach((entry) => {
-        const { width } = entry.contentRect;
-        if (popper.value) {
-          popper.value.style.width = `${width}px`;
-        }
-      });
-    });
+	if (anchor.value) {
+		resizeObserver = new ResizeObserver((entries) => {
+			entries.forEach((entry) => {
+				const { width } = entry.contentRect;
+				if (popper.value) {
+					popper.value.style.width = `${width}px`;
+				}
+			});
+		});
 
-    resizeObserver.observe(anchor.value);
-  }
+		resizeObserver.observe(anchor.value);
+	}
 });
 
 onBeforeMount(() => {
-  if (valueSelected.value) {
-    const selectedItem = props.items.find(
-      (item) => item[props.valueKey] === valueSelected.value,
-    );
-    if (selectedItem) {
-      selectableOption.value = selectedItem[props.displayKey];
-    } else {
-      selectableOption.value = valueSelected.value;
-      newItems.value.push({
-        label: valueSelected.value,
-        value: valueSelected.value,
-        notFound: true,
-      });
-    }
-  }
+	if (valueSelected.value) {
+		const selectedItem = props.items.find(
+			(item) => item[props.valueKey] === valueSelected.value,
+		);
+		if (selectedItem) {
+			selectableOption.value = selectedItem[props.displayKey];
+		} else {
+			selectableOption.value = valueSelected.value;
+			newItems.value.push({
+				label: valueSelected.value,
+				value: valueSelected.value,
+				notFound: true,
+			});
+		}
+	}
 });
 
 onUnmounted(() => {
-  // Interrompe l'osservazione e pulisce il ResizeObserver quando il componente viene distrutto
-  if (resizeObserver && anchor.value) {
-    resizeObserver.unobserve(anchor.value);
-    resizeObserver.disconnect();
-    resizeObserver = null;
-  }
+	// Interrompe l'osservazione e pulisce il ResizeObserver quando il componente viene distrutto
+	if (resizeObserver && anchor.value) {
+		resizeObserver.unobserve(anchor.value);
+		resizeObserver.disconnect();
+		resizeObserver = null;
+	}
 });
 </script>
 
@@ -194,7 +195,7 @@ onUnmounted(() => {
   <div class="flex flex-col">
     <!--Label-->
     <div class="inline-flex items-center mb-1.5">
-      <slot name="toggle" />
+      <slot name="toggle"></slot>
       <label
         v-if="props.label"
         :for="($attrs.id as string) || `${comboboxUniqueId}-id`"
@@ -236,8 +237,8 @@ onUnmounted(() => {
         :icon="ChevronDownIcon"
         no-style
         :disabled="props.disabled"
-        class="absolute inset-y-0 right-0 flex items-center m-2 bg-transparent w-fit"
         :class="{ 'rotate-180': isOpen }"
+        class="absolute inset-y-0 right-0 flex items-center m-2 bg-transparent w-fit"
         @click.stop="onOpenCloseCombobox(isOpen ? 'close' : 'open')"
       />
     </div>

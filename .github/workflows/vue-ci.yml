@@ -31,8 +31,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Project Check Format
-        run: npm run check-format
+      - name: Project lint
+        run: npm run lint
 
       - name: Build
         run: npm run build
