@@ -53,7 +53,7 @@ const selectableOption = ref('');
 
 const comboboxUniqueId: string = generateId();
 const comboboxInputRef = ref();
-const transition = getTransition('fade');
+const transition = getTransition('scaleAndFade');
 
 let resizeObserver: ResizeObserver | null = null;
 const { focused } = useFocus(comboboxInputRef);

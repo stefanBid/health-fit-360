@@ -6,6 +6,7 @@ import {
 	HfToggle,
 	HfInput,
 	HfCombobox,
+	HfInfoBox,
 } from '@/components';
 import {
 	TrashIcon,
@@ -278,6 +279,15 @@ const combo3 = ref('');
             />
           </template>
         </HfCombobox>
+      </div>
+    </div>
+
+    <div class="p-2">
+      <h1>Info Box</h1>
+      <div class="space-x-2">
+        <HfInfoBox text="This is a tooltip" />
+        <HfInfoBox text="This is a tooltip" />
+        <HfInfoBox text="This is a tooltip" />
       </div>
     </div>
   </div>

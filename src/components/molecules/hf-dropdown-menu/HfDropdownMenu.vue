@@ -53,7 +53,7 @@ const handleClickOption = (option: string) => {
   <div class="inline-block w-fit">
     <div
       ref="anchor"
-      class="inline-flex items-center w-fit"
+      class="flex items-center"
       aria-describedby="tooltip"
     >
       <hf-icon-button
@@ -82,7 +82,7 @@ const handleClickOption = (option: string) => {
             { ignore: [anchor] },
           ]"
           :style="popperStyle"
-          class="absolute z-50 flex flex-col w-40 p-1 text-white bg-white border border-gray-300 rounded-md shadow-lg"
+          class="absolute z-50 flex flex-col w-40 p-1 bg-white border border-gray-300 rounded-md shadow-lg"
         >
           <slot v-if="!props.options"></slot>
           <div
