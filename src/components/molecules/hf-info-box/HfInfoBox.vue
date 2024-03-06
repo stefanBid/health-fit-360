@@ -4,14 +4,14 @@ import { InformationCircleIcon as InformationCircleIconOutline } from '@heroicon
 import { InformationCircleIcon } from '@heroicons/vue/24/solid';
 import { getTransition } from '@/utils';
 import { usePopper } from '@/hooks';
-import HfIconButton from '@/components/atoms/hf-icon-button/HfIconButton.vue';
+import { HfIconButton } from '@/components';
 
-export interface BaseInfoBoxProps {
+export interface HfInfoBoxProps {
   text?: string;
   type?: 'solid' | 'outline';
 }
 
-const props = withDefaults(defineProps<BaseInfoBoxProps>(), {
+const props = withDefaults(defineProps<HfInfoBoxProps>(), {
 	text: 'Help text',
 	type: 'outline'
 });

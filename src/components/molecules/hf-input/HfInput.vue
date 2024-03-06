@@ -38,12 +38,13 @@ const UNIT_MAP = {
 
 <template>
   <div class="flex flex-col gap-y-1.5">
-    <div class="inline-flex items-center">
+    <div class="inline-flex items-center gap-x-1.5">
       <slot name="toggle"></slot>
       <label
         v-if="props.label"
         :for="($attrs.id as string) || inputId"
-        class="ml-1.5 hover:cursor-pointer text-sm sm:text-xs xs:text-xs"
+        class="text-sm transition-all duration-200 ease-in-out hover:cursor-pointer sm:text-xs xs:text-xs shrink-0"
+        :class="props.disabled ? 'pointer-events-none opacity-40' : 'hover:cursor-pointer opacity-100'"
       >
         {{ props.label }}
       </label>

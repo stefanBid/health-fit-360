@@ -1,76 +1,60 @@
 <script setup lang="ts">
-import {
-	ref,
-	nextTick,
-	computed,
-	onUnmounted,
-	onMounted,
-	onBeforeMount,
-} from 'vue';
-import { generateId, getTransition } from '@/utils';
+import { ref, useSlots, nextTick, computed, onUnmounted, onMounted, onBeforeMount } from 'vue';
 import { useFocus } from '@vueuse/core';
 import { vOnClickOutside } from '@vueuse/components';
-import { ChevronDownIcon, PlusCircleIcon } from '@heroicons/vue/24/outline';
-import { usePopper } from '@/hooks/usePopper';
+import { HfIconButton, HfInfoBox } from '@/components';
+import { ChevronDownIcon, PlusCircleIcon, CheckCircleIcon as CheckCircleIconOutline } from '@heroicons/vue/24/outline';
+import { CheckCircleIcon } from '@heroicons/vue/24/solid';
+import { usePopper } from '@/hooks';
+import { getTransition, generateId } from '@/utils';
 import type { ColorVariantExtra } from '@/types/global.types';
-import HfIconButton from '@/components/atoms/hf-icon-button/HfIconButton.vue';
 
-interface ComboboxProps {
+interface HfComboboxProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   items: any[];
   label?: string;
   help?: string;
   placeholder?: string;
+  color?: ColorVariantExtra;
   disabled?: boolean;
   valueKey?: string;
   displayKey?: string;
-  color?: ColorVariantExtra;
-  addIfNotFoundEnabled?: boolean;
+  addIfNotFoundOption?: boolean;
+  multiple?: boolean;
 }
 
 interface ItemOption {
   label: string;
   value: string;
-  notFound: boolean;
+  selected: boolean;
 }
-const props = withDefaults(defineProps<ComboboxProps>(), {
+
+const props = withDefaults(defineProps<HfComboboxProps>(), {
 	label: undefined,
 	help: undefined,
 	disabled: false,
-	placeholder: 'Insert text here...',
+	placeholder: '',
+	color: 'blue',
 	valueKey: '',
 	displayKey: '',
-	color: 'blue',
-	addIfNotFoundEnabled: false,
+	addIfNotFoundOption: false,
+	multiple: false,
 });
 
 defineOptions({ inheritAttrs: false });
 
-const valueSelected = defineModel<string>('valueSelected', { required: true });
+const selectedOption = defineModel<string | string[]>('selectedOption', { required: true });
 const newItems = ref<ItemOption[]>([]);
-const query = ref('');
-const selectableOption = ref('');
+const query = ref<string>('');
 
-const comboboxUniqueId: string = generateId();
+const slots = useSlots();
+const comboboxUniqueId = generateId();
 const comboboxInputRef = ref();
 const transition = getTransition('scaleAndFade');
 
 let resizeObserver: ResizeObserver | null = null;
 const { focused } = useFocus(comboboxInputRef);
-const { isOpen, anchor, popper, popperStyle, changeToolTipVisibility } =
-  usePopper('combobox');
-
-const inputValue = computed({
-	get: () => {
-		if (isOpen.value) {
-			return query.value;
-		}
-		return selectableOption.value;
-	},
-	set: (val) => {
-		query.value = val;
-	},
-});
+const { isOpen, anchor, popper, popperStyle, changeToolTipVisibility } = usePopper('combobox');
 
 const onOpenCloseCombobox = (op: 'open' | 'close') => {
 	changeToolTipVisibility(op);
@@ -89,95 +73,149 @@ const onOpenCloseCombobox = (op: 'open' | 'close') => {
 	});
 };
 
-const normalizedPropsItems = computed<ItemOption[]>(() =>
-	props.items.map((item) => ({
-		label: item[props.displayKey],
-		value: item[props.valueKey],
-		notFound: false,
-	})),
-);
+const normalizedPropsItems = (): ItemOption[] => {
+	if (!props.multiple && !Array.isArray(selectedOption.value)) {
+		return props.items.map(item => ({
+			label: item[props.displayKey] as string,
+			value: item[props.valueKey] as string,
+			selected: selectedOption.value === (item[props.valueKey] as string),
+		}));
+	}
+	if (props.multiple && Array.isArray(selectedOption.value)) {
+		return props.items.map(item => ({
+			label: item[props.displayKey] as string,
+			value: item[props.valueKey] as string,
+			selected: selectedOption.value.includes(item[props.valueKey] as string),
+		}));
+	}
+	return [];
+};
 
 const filteredItemsOption = computed<ItemOption[]>(() => {
-	const combinedItems = [...normalizedPropsItems.value, ...newItems.value];
-
-	const filtered = combinedItems.filter((item) =>
-		item.label.toLowerCase().includes(query.value.toLowerCase()),
-	);
-
-	if (
-		props.addIfNotFoundEnabled &&
-    filtered.length === 0 &&
-    query.value.trim() !== ''
-	) {
-		filtered.push({
-			label: query.value,
-			value: query.value,
-			notFound: true,
-		});
-	}
+	const filtered = newItems.value.filter(item => item.label.toLowerCase().includes(query.value.toLowerCase()));
 
 	return filtered;
 });
 
-const onSelectComboboxItemOption = (item: ItemOption) => {
-	if (item.notFound && newItems.value.indexOf(item) === -1) return;
+const inputValue = computed({
+	get: () => {
+		// If the combobox is open, display the current query
+		if (isOpen.value) {
+			return query.value;
+		}
 
-	if (selectableOption.value !== item.label) {
-		valueSelected.value = item.value;
-		selectableOption.value = item.label;
-		onOpenCloseCombobox('close');
-	} else {
-		valueSelected.value = '';
-		selectableOption.value = '';
+		// If the combobox is closed, determine what value to display based on the selection
+		if (!props.multiple) {
+			// Single selection mode
+			const selectedItem = newItems.value.find(item => item.value === selectedOption.value);
+			return selectedItem ? selectedItem.label : '';
+		}
+		// Multiple selection mode (optional, depends on how you want to display selected values)
+		const selectedItems = newItems.value.filter(item => selectedOption.value.includes(item.value));
+		// An example: concatenate labels of selected items with a comma
+		return selectedItems.map(item => item.label).join(', ');
+	},
+	set: val => {
+		// Update the query based on the user input
+		query.value = val;
+	},
+});
+
+const onSelectComboboxItemOption = (itemOption: ItemOption) => {
+	const itemIndexInNewItems = newItems.value.findIndex(item => item.value === itemOption.value);
+
+	if (itemIndexInNewItems !== -1) {
+		newItems.value[itemIndexInNewItems].selected = !newItems.value[itemIndexInNewItems].selected;
+
+		if (!props.multiple && !Array.isArray(selectedOption.value)) {
+			// Single selection: update selectedOption or clear it if the item was deselected
+			selectedOption.value = newItems.value[itemIndexInNewItems].selected ? itemOption.value : '';
+
+			// Remove the selected state from all other items
+			newItems.value.forEach((_, index) => {
+				if (index !== itemIndexInNewItems) {
+					newItems.value[index].selected = false;
+				}
+			});
+		} else if (props.multiple && Array.isArray(selectedOption.value)) {
+			// Multiple selection: update selectedOption by adding or removing the item
+			if (newItems.value[itemIndexInNewItems].selected) {
+				selectedOption.value.push(itemOption.value);
+			} else {
+				selectedOption.value = selectedOption.value.filter((value: string) => value !== itemOption.value);
+			}
+		}
 	}
+
+	onOpenCloseCombobox('close'); // Close the combobox after selection/deselection
 };
 
-const addNewItemOption = (newItem: ItemOption) => {
-	const isDuplicate = newItems.value.some(
-		(item) => item.value === newItem.value,
-	);
+const addNewItemOption = (newItem: string) => {
+	const isDuplicate = newItems.value.some(item => item.value === newItem);
 	if (isDuplicate) return;
 
 	newItems.value.push({
-		...newItem,
-		notFound: false,
+		label: newItem,
+		value: newItem,
+		selected: true,
 	});
+	if (!props.multiple && !Array.isArray(selectedOption.value)) {
+		selectedOption.value = newItem;
 
-	valueSelected.value = newItem.value;
-	selectableOption.value = newItem.label;
+		// Remove the selected state from all other items
+		newItems.value.forEach((item, index) => {
+			if (item.value !== newItem) {
+				newItems.value[index].selected = false;
+			}
+		});
+	} else if (props.multiple && Array.isArray(selectedOption.value)) {
+		selectedOption.value.push(newItem);
+	}
 	onOpenCloseCombobox('close');
 };
 
+onBeforeMount(() => {
+	newItems.value = normalizedPropsItems();
+
+	if (!props.multiple && !Array.isArray(selectedOption.value) && selectedOption.value !== '') {
+		const valueExists = newItems.value.some(item => item.value === selectedOption.value);
+		if (!valueExists) {
+			newItems.value.push({
+				label: selectedOption.value as string,
+				value: selectedOption.value as string,
+				selected: true,
+			});
+		}
+	} else if (props.multiple && Array.isArray(selectedOption.value) && selectedOption.value.length > 0) {
+		selectedOption.value.forEach((value: string) => {
+			const valueExists = newItems.value.some(item => item.value === value);
+			if (!valueExists) {
+				newItems.value.push({
+					label: value,
+					value,
+					selected: true,
+				});
+			}
+		});
+	}
+});
+
 onMounted(() => {
 	if (anchor.value) {
-		resizeObserver = new ResizeObserver((entries) => {
-			entries.forEach((entry) => {
+		// Crea un'istanza di ResizeObserver
+		resizeObserver = new ResizeObserver(entries => {
+			// eslint-disable-next-line no-restricted-syntax
+			entries.forEach(entry => {
 				const { width } = entry.contentRect;
+				// Aggiorna la larghezza del popper per corrispondere a quella dell'anchor
 				if (popper.value) {
 					popper.value.style.width = `${width}px`;
 				}
 			});
 		});
 
+		// Inizia a osservare l'elemento anchor
 		resizeObserver.observe(anchor.value);
-	}
-});
-
-onBeforeMount(() => {
-	if (valueSelected.value) {
-		const selectedItem = props.items.find(
-			(item) => item[props.valueKey] === valueSelected.value,
-		);
-		if (selectedItem) {
-			selectableOption.value = selectedItem[props.displayKey];
-		} else {
-			selectableOption.value = valueSelected.value;
-			newItems.value.push({
-				label: valueSelected.value,
-				value: valueSelected.value,
-				notFound: true,
-			});
-		}
 	}
 });
 
@@ -192,32 +230,42 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="flex flex-col">
+  <div class="w-full space-y-2">
     <!--Label-->
-    <div class="inline-flex items-center mb-1.5">
+    <div
+      v-if="props.label || props.help || slots.toggle"
+      class="flex items-center gap-x-2"
+    >
       <slot name="toggle"></slot>
-      <label
-        v-if="props.label"
-        :for="($attrs.id as string) || `${comboboxUniqueId}-id`"
-        class="ml-1.5 hover:cursor-pointer text-sm sm:text-xs xs:text-xs"
-      >
-        {{ props.label }}
-      </label>
-      <!--Help icon-->
+      <div class="flex items-center flex-1 space-x-2">
+        <label
+          v-show="props.label"
+          :for="($attrs.id as string) || `${comboboxUniqueId}-id`"
+          class="text-sm transition-all duration-200 ease-in-out hover:cursor-pointer sm:text-xs xs:text-xs shrink-0"
+          :class="props.disabled ? 'pointer-events-none opacity-40' : 'hover:cursor-pointer opacity-100'"
+        >
+          {{ props.label }}
+        </label>
+        <HfInfoBox
+          v-if="props.help"
+          :text="props.help"
+          type="outline"
+        />
+      </div>
     </div>
     <!--Combobox-->
     <div
       ref="anchor"
       class="relative flex items-center w-full text-sm xs:text-xs sm:text-xs"
+      aria-describedby="tooltip"
     >
+      <!--Input-Combobox-->
       <input
         :id="($attrs.id as string) || `${comboboxUniqueId}-id`"
         ref="comboboxInputRef"
         v-model="inputValue"
-        type="text"
         :placeholder="props.placeholder"
-        :disabled="props.disabled"
-        class="w-full p-2 truncate transition-all duration-200 ease-in-out border border-gray-300 rounded-md outline-none bg-slate-100 focus:outline-none focus:ring-1"
+        class="w-full py-2 pl-2 pr-8 truncate transition-all duration-200 ease-in-out border border-gray-300 rounded-md outline-none bg-slate-100 focus:outline-none focus:ring-1"
         :class="[
           {
             'border-gray-400': !props.disabled,
@@ -236,9 +284,11 @@ onUnmounted(() => {
       <HfIconButton
         :icon="ChevronDownIcon"
         no-style
-        :disabled="props.disabled"
-        :class="{ 'rotate-180': isOpen }"
-        class="absolute inset-y-0 right-0 flex items-center m-2 bg-transparent w-fit"
+        class="absolute inset-y-0 right-0 flex items-center p-2 transition-all duration-200 ease-in-out bg-transparent border-none w-fit"
+        :class="[
+          props.disabled ? 'pointer-events-none opacity-40' : 'opacity-100',
+          isOpen ? 'rotate-180' : '',
+        ]"
         @click.stop="onOpenCloseCombobox(isOpen ? 'close' : 'open')"
       />
     </div>
@@ -254,78 +304,72 @@ onUnmounted(() => {
         <div
           v-if="isOpen"
           ref="popper"
-          v-on-click-outside="[
-            () => changeToolTipVisibility('close'),
-            { ignore: [anchor] },
-          ]"
+          v-on-click-outside="[() => changeToolTipVisibility('close'), { ignore: [anchor] }]"
           :style="popperStyle"
-          class="absolute z-50 w-full overflow-y-auto text-sm bg-white border border-gray-300 rounded-md shadow-lg h-fit max-h-72 xs:text-xs sm:text-xs"
+          class="absolute z-50 w-full overflow-y-auto text-sm bg-white border border-gray-300 rounded-md shadow-lg max-h-60 h-fit xs:text-xs sm:text-xs"
         >
-          <div
-            v-if="filteredItemsOption.length === 0"
-            class="relative px-4 py-2 italic cursor-default select-none text-kl-gray-400"
-          >
-            Nothing found.
-          </div>
-
+          <!--Options-->
           <div
             v-for="(item, index) in filteredItemsOption"
             :key="item.value"
-            class="text-black transition-all duration-200 ease-in-out group"
+            class="relative flex p-2 text-black transition-all duration-200 ease-in-out bg-white hover:cursor-pointer hover:text-white group"
             :class="{
-              'bg-white hover:text-white':
-                valueSelected !== item.value &&
-                (!item.notFound || newItems.includes(item)),
-              'bg-white':
-                valueSelected !== item.value &&
-                item.notFound &&
-                !newItems.includes(item),
-              ' hover:bg-blue-500 ':
-                valueSelected !== item.value &&
-                props.color === 'blue' &&
-                (!item.notFound || newItems.includes(item)),
-              ' hover:bg-yellow-500 ':
-                valueSelected !== item.value &&
-                props.color === 'yellow' &&
-                (!item.notFound || newItems.includes(item)),
-              ' hover:bg-violet-500':
-                valueSelected !== item.value &&
-                props.color === 'violet' &&
-                (!item.notFound || newItems.includes(item)),
-              'bg-blue-500 text-white':
-                valueSelected === item.value && props.color === 'blue',
-              'bg-yellow-500 text-white':
-                valueSelected === item.value && props.color === 'yellow',
-              'bg-violet-500 text-white':
-                valueSelected === item.value && props.color === 'violet',
-              'hover:cursor-pointer': !item.notFound || newItems.includes(item),
+
+              'hover:bg-blue-500': props.color === 'blue',
+              'hover:bg-yellow-500': props.color === 'yellow',
+              'hover:bg-violet-500': props.color === 'violet',
+
+              'font-semibold': item.selected,
+              'text-blue-500': item.selected && props.color === 'blue',
+              'text-yellow-500': item.selected && props.color === 'yellow',
+              'text-violet-500': item.selected && props.color === 'violet',
+
               'rounded-t-md': index === 0,
               'rounded-b-md': index === filteredItemsOption.length - 1,
             }"
             @click="onSelectComboboxItemOption(item)"
           >
-            <span class="inline-flex items-center p-2 gap-x-1">
-              <PlusCircleIcon
-                v-if="item.notFound && !newItems.includes(item)"
-                class="size-6 shrink-0 rounded-md p-0.5 transition-all duration-200 ease-in-out hover:cursor-pointer hover:text-white"
-                :class="{
+            <span
+              class="absolute inset-y-0 left-0 flex items-center justify-center p-2 bg-transparent border-none w-fit"
+            >
+              <component
+                :is="item.selected ? CheckCircleIcon : CheckCircleIconOutline"
+                class="transition-all duration-200 ease-in-out size-6 sm:size-5 xs:size-5 group-hover:text-white"
+                :class="[
+                  {
+                    'text-black': !item.selected,
+                    'text-blue-500': item.selected && props.color === 'blue',
+                    'text-yellow-500': item.selected && props.color === 'yellow',
+                    'text-violet-500': item.selected && props.color === 'violet',
+                  },
+                ]"
+              />
+            </span>
+
+            <p class="flex-1 pl-8 truncate">
+              {{ item.label }}
+            </p>
+          </div>
+          <!--Add new item option or no option-->
+          <div
+            v-if="filteredItemsOption.length === 0"
+            class="inline-flex items-center w-full p-2 gap-x-1"
+          >
+            <PlusCircleIcon
+              v-if="props.addIfNotFoundOption"
+              class="transition-all duration-200 ease-in-out rounded-md size-6 shrink-0 hover:cursor-pointer hover:text-white"
+              :class="[
+                {
                   'hover:bg-blue-500': props.color === 'blue',
                   'hover:bg-yellow-500': props.color === 'yellow',
                   'hover:bg-violet-500': props.color === 'violet',
-                }"
-                @click.stop="addNewItemOption(item)"
-              />
-              <p
-                class="flex-1 text-sm truncate xs:text-xs sm:text-xs"
-                :class="{ italic: item.notFound && !newItems.includes(item) }"
-              >
-                {{
-                  item.notFound && !newItems.includes(item)
-                    ? `Add "${item.label}"`
-                    : item.label
-                }}
-              </p>
-            </span>
+                },
+              ]"
+              @click.stop="addNewItemOption(query)"
+            />
+            <p class="flex-1 italic truncate cursor-default select-none">
+              {{ props.addIfNotFoundOption ? `Add "${query}"` : 'Nothing found' }}
+            </p>
           </div>
         </div>
       </transition>

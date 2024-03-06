@@ -36,9 +36,7 @@ const items = [
 	{ label: 'Option 3', value: '3' },
 ];
 
-const combo1 = ref('');
-const combo2 = ref('');
-const combo3 = ref('');
+const combo1 = ref([]);
 </script>
 
 <template>
@@ -220,62 +218,26 @@ const combo3 = ref('');
 
     <div class="p-2">
       <h1>Combobox</h1>
-      {{ combo1 }}, {{ combo2 }}, {{ combo3 }}
+      {{ combo1 }}
       <div class="flex flex-col gap-y-4">
         <HfCombobox
           id="combobox-1"
-          v-model:value-selected="combo1"
+          v-model:selected-option="combo1"
           :items="items"
           :disabled="!toggle1"
-          color="blue"
+          color="violet"
           label="Combobox-1"
+          help="This is a combobox"
           display-key="label"
           value-key="value"
-          add-if-not-found-enabled
+          add-if-not-found-option
+          multiple
         >
           <template #toggle>
             <hf-toggle
               id="toggle-combobox-1"
               v-model:enabled="toggle1"
               color="blue"
-            />
-          </template>
-        </HfCombobox>
-
-        <HfCombobox
-          id="combobox-2"
-          v-model:value-selected="combo2"
-          :items="items"
-          :disabled="!toggle2"
-          color="yellow"
-          display-key="label"
-          value-key="value"
-          add-if-not-found-enabled
-        >
-          <template #toggle>
-            <hf-toggle
-              id="toggle-combobox-2"
-              v-model:enabled="toggle2"
-              color="yellow"
-            />
-          </template>
-        </HfCombobox>
-
-        <HfCombobox
-          id="combobox-3"
-          v-model:value-selected="combo3"
-          :items="items"
-          :disabled="!toggle3"
-          color="violet"
-          display-key="label"
-          value-key="value"
-          add-if-not-found-enabled
-        >
-          <template #toggle>
-            <hf-toggle
-              id="toggle-combobox-3"
-              v-model:enabled="toggle3"
-              color="violet"
             />
           </template>
         </HfCombobox>
