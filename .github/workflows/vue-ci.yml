@@ -31,11 +31,11 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Project lint
-        run: npm run lint
-
       - name: Build
         run: npm run build
+
+      - name: Project lint
+        run: npm run lint
 
       - name: GitHub Status Check
         run: echo "All steps have passed!"
