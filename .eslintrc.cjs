@@ -115,7 +115,8 @@ module.exports = {
 		}],
 		'arrow-spacing': ['warn', { 'before': true, 'after': true }],
 		'no-multi-spaces': ['warn', { 'ignoreEOLComments': true }],
-		'no-extra-parens': ['warn', 'all', { 'ignoreJSX': 'all', 'nestedBinaryExpressions': false }]
+		'no-extra-parens': ['warn', 'all', { 'ignoreJSX': 'all', 'nestedBinaryExpressions': false }],
+		'no-multiple-empty-lines': ['warn', { 'max': 1, 'maxEOF': 0, 'maxBOF': 0 }],
 	}
 
 };
