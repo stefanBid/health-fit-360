@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ColorVariantExtra } from '@/types/global.types';
+import type { ColorVariantExtra } from '@/types/global.types';
 import { Switch, SwitchGroup, SwitchLabel } from '@headlessui/vue';
+import { HfInfoBox } from '@/components';
 import { FunctionalComponent } from 'vue';
 
 defineOptions({ inheritAttrs: false });
@@ -15,7 +16,12 @@ interface HfToggleProps {
   };
 }
 
-const props = defineProps<HfToggleProps>();
+const props = withDefaults(defineProps<HfToggleProps>(), {
+	label: undefined,
+	help: undefined,
+	color: 'blue',
+	dotIcon: undefined,
+});
 const enabled = defineModel<boolean>('enabled', { required: true });
 </script>
 
@@ -57,14 +63,19 @@ const enabled = defineModel<boolean>('enabled', { required: true });
 
       <div
         v-if="props.label || props.help"
-        class="inline-flex justify-center ml-1.5 gap-x-1"
+        class="inline-flex items-center ml-1.5 gap-x-1"
       >
         <SwitchLabel
+          v-if="props.label"
           :id="($attrs.id as string) || undefined"
           class="text-sm transition-all duration-200 ease-in-out sm:text-xs xs:text-xs hover:cursor-pointer"
         >
           {{ props.label }}
         </SwitchLabel>
+        <HfInfoBox
+          v-if="props.help"
+          :text="props.help"
+        />
       </div>
     </div>
   </SwitchGroup>
