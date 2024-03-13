@@ -3,13 +3,13 @@ import { usePopper } from '@/hooks';
 import { getTransition } from '@/utils';
 import { vOnClickOutside } from '@vueuse/components';
 import { HfIconButton } from '@/components';
-import { Bars3CenterLeftIcon } from '@heroicons/vue/24/solid';
+import { Bars3CenterLeftIcon, ChevronRightIcon } from '@heroicons/vue/24/solid';
 import { computed, type FunctionalComponent } from 'vue';
 
 interface MenuOption {
   optionKey: string;
   optionLabel: string;
-  icon: FunctionalComponent;
+  icon?: FunctionalComponent;
 }
 
 interface HfDropdownMenuProps {
@@ -60,7 +60,7 @@ const handleClickOption = (option: string) => {
         :icon="getMenuIcon"
         no-style
         :disabled="props.disabled"
-        class="p-2 text-black bg-gray-200 border rounded-md active:scale-95"
+        class="p-2 text-black transition-all duration-200 ease-in-out bg-gray-200 border rounded-md hover:bg-gray-300 active:scale-95"
         type="button"
         @click="handleClick"
       />
@@ -96,12 +96,13 @@ const handleClickOption = (option: string) => {
               @click="handleClickOption(option.optionKey)"
             >
               <component
-                :is="option.icon"
-                class="w-5 h-5 transition-all duration-200 ease-in-out sm:w-4 sm:h-4 xs:w-4 xs:h-4 shrink-0"
+                :is="option.icon ? option.icon : ChevronRightIcon"
+                class="transition-all duration-200 ease-in-out size-5 sm:size-4 xs:size-4 shrink-0"
               />
               <span
                 class="flex-1 text-sm truncate transition-all ease-in-out sm:text-xs xs:text-xs dutarion-200"
-              >{{ option.optionLabel }}
+              >
+                {{ option.optionLabel }}
               </span>
             </div>
           </div>

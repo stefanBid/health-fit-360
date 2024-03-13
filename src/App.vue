@@ -1,30 +1,45 @@
 <script setup lang="ts">
 import {
-	HfInput,
-	HfToggle
+	HfDropdownMenu
 } from '@/components';
-
 import { ref } from 'vue';
-const input = ref('text');
-const enabled = ref(false);
+
+const options = [
+	{
+		optionKey: 'option1',
+		optionLabel: 'Option 1',
+	},
+	{
+		optionKey: 'option2',
+		optionLabel: 'Option 2',
+	},
+	{
+		optionKey: 'option3',
+		optionLabel: 'Option 3',
+	}
+]
+
+const optionSelected = ref('');
+
 </script>
 
 <template>
   <div class="flex flex-col p-10 gap-y-8 ">
-    <HfInput
-      v-model:input-value="input"
-      color="violet"
-      type="number"
-      unit="cm"
-      label="Input"
-      help="This is a help text"
-      :disabled="!enabled"
+    {{ optionSelected }}
+    <HfDropdownMenu
+
+      :on-send-option="option => {optionSelected = option}"
     >
-      <template #toggle>
-        <HfToggle
-          v-model:enabled="enabled"
-        />
-      </template>
-    </HfInput>
+      <h1>Prova</h1>
+      <div class="flex flex-col gap-y-6">
+        <span
+          v-for="option in options"
+          :key="option.optionKey"
+          @click="optionSelected = option.optionLabel"
+        >
+          {{ option.optionLabel }}
+        </span>
+      </div>
+    </HfDropdownMenu>
   </div>
 </template>
