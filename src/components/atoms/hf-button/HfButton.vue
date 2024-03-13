@@ -19,7 +19,6 @@ const props = withDefaults(defineProps<HfButtonProps>(), {
 });
 
 const getButtonStyle = computed(() => {
-
 	if (props.noStyle) {
 		return ['outline-none']
 	}
@@ -50,7 +49,6 @@ const getButtonStyle = computed(() => {
 	}
 
 	return style.join(' ');
-
 })
 </script>
 

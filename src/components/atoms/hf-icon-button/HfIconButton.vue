@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import type { ColorVariantSettings } from '@/types/global.types';
-import type { FunctionalComponent } from 'vue';
+import { computed, type FunctionalComponent } from 'vue';
 import { EyeIcon } from '@heroicons/vue/24/solid';
-
-defineOptions({ inheritAttrs: false });
 
 interface HfIconButtonProps {
   color?: ColorVariantSettings;
@@ -18,28 +16,40 @@ const props = withDefaults(defineProps<HfIconButtonProps>(), {
 	disabled: false,
 	noStyle: false,
 });
+
+const getButtonStyle = computed(() => {
+	if (props.noStyle) {
+		return ['outline-none'];
+	}
+
+	const style = [
+		'p-2 text-base transition-all duration-200 ease-in-out rounded-md outline-none shrink-0 w-fit',
+	];
+
+	// Color
+	if (props.color === 'red') {
+		style.push('bg-red-500 hover:bg-red-600 active:bg-red-700  text-white');
+	} else if (props.color === 'green') {
+		style.push('bg-green-500 hover:bg-green-600 active:bg-green-700 text-white');
+	} else if (props.color === 'gray') {
+		style.push('bg-gray-200 hover:bg-gray-300 active:bg-gray-400 text-black');
+	}
+
+	// Disabled
+	if (props.disabled) {
+		style.push('cursor-not-allowed pointer-events-none opacity-50');
+	} else {
+		style.push('cursor-pointer opacity-100');
+	}
+
+	return style.join(' ');
+})
 </script>
 
 <template>
   <button
     v-bind="$attrs"
-    class="text-base transition-all duration-200 ease-in-out outline-none shrink-0"
-    :class="[
-      {
-        'p-2 rounded-md w-fit': !props.noStyle,
-      },
-      {
-        'bg-red-500 hover:bg-red-600 active:bg-red-700  text-white ':
-          props.color === 'red' && !props.noStyle,
-        'bg-green-500 hover:bg-green-600 active:bg-green-700 text-white':
-          props.color === 'green' && !props.noStyle,
-        'bg-gray-200 hover:bg-gray-300 active:bg-gray-400 text-black':
-          props.color === 'gray' && !props.noStyle,
-      },
-      props.disabled
-        ? 'cursor-not-allowed pointer-events-none opacity-50'
-        : 'cursor-pointer opacity-100',
-    ]"
+    :class="getButtonStyle"
   >
     <component
       :is="props.icon || EyeIcon"
