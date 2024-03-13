@@ -42,7 +42,10 @@ const UNIT_MAP = {
 
 <template>
   <div class="flex flex-col gap-y-1.5">
-    <div class="inline-flex items-center w-fit">
+    <div
+      v-if="props.label || props.help || slots.toggle"
+      class="inline-flex items-center w-fit"
+    >
       <slot name="toggle"></slot>
 
       <label

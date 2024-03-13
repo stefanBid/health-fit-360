@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {
-	HfDropdownMenu
+	HfCombobox,
+	HfToggle
 } from '@/components';
 import { ref } from 'vue';
 
@@ -19,27 +20,28 @@ const options = [
 	}
 ]
 
-const optionSelected = ref('');
-
+const optionSelected = ref('sdsdssdsdsdsd');
+const enabled = ref(false);
 </script>
 
 <template>
   <div class="flex flex-col p-10 gap-y-8 ">
     {{ optionSelected }}
-    <HfDropdownMenu
-
-      :on-send-option="option => {optionSelected = option}"
+    <HfCombobox
+      v-model:selected-option="optionSelected"
+      :items="options"
+      color="yellow"
+      label="Combobox"
+      :disabled="!enabled"
+      help="This is a combobox"
+      display-key="optionLabel"
+      value-key="optionKey"
     >
-      <h1>Prova</h1>
-      <div class="flex flex-col gap-y-6">
-        <span
-          v-for="option in options"
-          :key="option.optionKey"
-          @click="optionSelected = option.optionLabel"
-        >
-          {{ option.optionLabel }}
-        </span>
-      </div>
-    </HfDropdownMenu>
+      <template #toggle>
+        <HfToggle
+          v-model:enabled="enabled"
+        />
+      </template>
+    </HfCombobox>
   </div>
 </template>

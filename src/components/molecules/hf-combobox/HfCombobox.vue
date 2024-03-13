@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, useSlots, nextTick, computed, onUnmounted, onMounted, onBeforeMount } from 'vue';
-import { useFocus } from '@vueuse/core';
+import { ref, useSlots, nextTick, computed, onUnmounted, onMounted, onBeforeMount, watch } from 'vue';
+import { useFocus, useDebounce } from '@vueuse/core';
 import { vOnClickOutside } from '@vueuse/components';
 import { HfIconButton, HfInfoBox } from '@/components';
-import { ChevronDownIcon, PlusCircleIcon, CheckCircleIcon as CheckCircleIconOutline } from '@heroicons/vue/24/outline';
+import { ChevronDownIcon, PlusCircleIcon, CheckCircleIcon as CheckCircleIconOutline, ArrowPathIcon } from '@heroicons/vue/24/outline';
 import { CheckCircleIcon } from '@heroicons/vue/24/solid';
 import { usePopper } from '@/hooks';
 import { getTransition, generateId } from '@/utils';
@@ -45,7 +45,10 @@ defineOptions({ inheritAttrs: false });
 
 const selectedOption = defineModel<string | string[]>('selectedOption', { required: true });
 const newItems = ref<ItemOption[]>([]);
+
 const query = ref<string>('');
+const queryDebounced = useDebounce(query, 300);
+const isWaitingForDebounce = ref(false);
 
 const slots = useSlots();
 const comboboxUniqueId = generateId();
@@ -58,12 +61,11 @@ const { isOpen, anchor, popper, popperStyle, changeToolTipVisibility } = usePopp
 
 const onOpenCloseCombobox = (op: 'open' | 'close') => {
 	changeToolTipVisibility(op);
-	if (op === 'close') {
+	query.value = '';
+	if (op === 'close')
 		focused.value = false;
-	} else {
+	else
 		focused.value = true;
-		query.value = '';
-	}
 
 	nextTick(() => {
 		if (anchor.value && popper.value) {
@@ -92,7 +94,7 @@ const normalizedPropsItems = (): ItemOption[] => {
 };
 
 const filteredItemsOption = computed<ItemOption[]>(() => {
-	const filtered = newItems.value.filter(item => item.label.toLowerCase().includes(query.value.toLowerCase()));
+	const filtered = newItems.value.filter(item => item.label.toLowerCase().includes(queryDebounced.value.toLowerCase()));
 
 	return filtered;
 });
@@ -174,6 +176,15 @@ const addNewItemOption = (newItem: string) => {
 	onOpenCloseCombobox('close');
 };
 
+watch([query, queryDebounced], () => {
+	if (query.value !== queryDebounced.value) {
+		isWaitingForDebounce.value = true;
+	}
+	if (query.value === queryDebounced.value) {
+		isWaitingForDebounce.value = false;
+	}
+});
+
 onBeforeMount(() => {
 	newItems.value = normalizedPropsItems();
 
@@ -234,24 +245,26 @@ onUnmounted(() => {
     <!--Label-->
     <div
       v-if="props.label || props.help || slots.toggle"
-      class="flex items-center gap-x-2"
+      class="inline-flex items-center w-fit"
     >
       <slot name="toggle"></slot>
-      <div class="flex items-center flex-1 space-x-2">
-        <label
-          v-show="props.label"
-          :for="($attrs.id as string) || `${comboboxUniqueId}-id`"
-          class="text-sm transition-all duration-200 ease-in-out hover:cursor-pointer sm:text-xs xs:text-xs shrink-0"
-          :class="props.disabled ? 'pointer-events-none opacity-40' : 'hover:cursor-pointer opacity-100'"
-        >
-          {{ props.label }}
-        </label>
-        <HfInfoBox
-          v-if="props.help"
-          :text="props.help"
-          type="outline"
-        />
-      </div>
+
+      <label
+        v-if="props.label"
+        :for="($attrs.id as string) || `${comboboxUniqueId}-id`"
+        class="text-sm transition-all duration-200 ease-in-out hover:cursor-pointer sm:text-xs xs:text-xs shrink-0"
+        :class="[
+          slots.toggle ? 'ml-2' : 'ml-0',
+          props.disabled ? 'pointer-events-none opacity-40' : 'hover:cursor-pointer opacity-100'
+        ]"
+      >
+        {{ props.label }}
+      </label>
+      <HfInfoBox
+        v-if="props.help"
+        :text="props.help"
+        class="ml-0.5"
+      />
     </div>
     <!--Combobox-->
     <div
@@ -275,8 +288,7 @@ onUnmounted(() => {
               !props.disabled && props.color === 'yellow',
             'focus:ring-violet-500 hover:border-violet-500':
               !props.disabled && props.color === 'violet',
-            'text-black/50': props.disabled,
-            'opacity-60': props.disabled,
+            'text-black/50 opacity-60 pointer-events-none': props.disabled,
           },
         ]"
         @click="!isOpen ? onOpenCloseCombobox('open') : undefined"
@@ -308,69 +320,79 @@ onUnmounted(() => {
           :style="popperStyle"
           class="absolute z-50 w-full overflow-y-auto text-sm bg-white border border-gray-300 rounded-md shadow-lg max-h-60 h-fit xs:text-xs sm:text-xs"
         >
-          <!--Options-->
-          <div
-            v-for="(item, index) in filteredItemsOption"
-            :key="item.value"
-            class="relative flex p-2 text-black transition-all duration-200 ease-in-out bg-white hover:cursor-pointer hover:text-white group"
-            :class="{
+          <template v-if="isWaitingForDebounce">
+            <div class="flex items-center p-2">
+              <ArrowPathIcon class="text-gray-500 size-6 animate-spin" />
+              <p class="ml-2 text-gray-500">
+                Loading...
+              </p>
+            </div>
+          </template>
+          <template v-else>
+            <!--Options-->
+            <div
+              v-for="(item, index) in filteredItemsOption"
+              :key="item.value"
+              class="relative flex p-2 text-black transition-all duration-200 ease-in-out bg-white hover:cursor-pointer hover:text-white group"
+              :class="{
 
-              'hover:bg-blue-500': props.color === 'blue',
-              'hover:bg-yellow-500': props.color === 'yellow',
-              'hover:bg-violet-500': props.color === 'violet',
+                'hover:bg-blue-500': props.color === 'blue',
+                'hover:bg-yellow-500': props.color === 'yellow',
+                'hover:bg-violet-500': props.color === 'violet',
 
-              'font-semibold': item.selected,
-              'text-blue-500': item.selected && props.color === 'blue',
-              'text-yellow-500': item.selected && props.color === 'yellow',
-              'text-violet-500': item.selected && props.color === 'violet',
+                'font-semibold': item.selected,
+                'text-blue-500': item.selected && props.color === 'blue',
+                'text-yellow-500': item.selected && props.color === 'yellow',
+                'text-violet-500': item.selected && props.color === 'violet',
 
-              'rounded-t-md': index === 0,
-              'rounded-b-md': index === filteredItemsOption.length - 1,
-            }"
-            @click="onSelectComboboxItemOption(item)"
-          >
-            <span
-              class="absolute inset-y-0 left-0 flex items-center justify-center p-2 bg-transparent border-none w-fit"
+                'rounded-t-md': index === 0,
+                'rounded-b-md': index === filteredItemsOption.length - 1,
+              }"
+              @click="onSelectComboboxItemOption(item)"
             >
-              <component
-                :is="item.selected ? CheckCircleIcon : CheckCircleIconOutline"
-                class="transition-all duration-200 ease-in-out size-6 sm:size-5 xs:size-5 group-hover:text-white"
+              <span
+                class="absolute inset-y-0 left-0 flex items-center justify-center p-2 bg-transparent border-none w-fit"
+              >
+                <component
+                  :is="item.selected ? CheckCircleIcon : CheckCircleIconOutline"
+                  class="transition-all duration-200 ease-in-out size-6 sm:size-5 xs:size-5 group-hover:text-white"
+                  :class="[
+                    {
+                      'text-black': !item.selected,
+                      'text-blue-500': item.selected && props.color === 'blue',
+                      'text-yellow-500': item.selected && props.color === 'yellow',
+                      'text-violet-500': item.selected && props.color === 'violet',
+                    },
+                  ]"
+                />
+              </span>
+
+              <p class="flex-1 pl-8 truncate">
+                {{ item.label }}
+              </p>
+            </div>
+            <!--Add new item option or no option-->
+            <div
+              v-if="filteredItemsOption.length === 0"
+              class="inline-flex items-center w-full p-2 gap-x-1"
+            >
+              <PlusCircleIcon
+                v-if="props.addIfNotFoundOption"
+                class="transition-all duration-200 ease-in-out rounded-md size-6 shrink-0 hover:cursor-pointer hover:text-white"
                 :class="[
                   {
-                    'text-black': !item.selected,
-                    'text-blue-500': item.selected && props.color === 'blue',
-                    'text-yellow-500': item.selected && props.color === 'yellow',
-                    'text-violet-500': item.selected && props.color === 'violet',
+                    'hover:bg-blue-500': props.color === 'blue',
+                    'hover:bg-yellow-500': props.color === 'yellow',
+                    'hover:bg-violet-500': props.color === 'violet',
                   },
                 ]"
+                @click.stop="addNewItemOption(query)"
               />
-            </span>
-
-            <p class="flex-1 pl-8 truncate">
-              {{ item.label }}
-            </p>
-          </div>
-          <!--Add new item option or no option-->
-          <div
-            v-if="filteredItemsOption.length === 0"
-            class="inline-flex items-center w-full p-2 gap-x-1"
-          >
-            <PlusCircleIcon
-              v-if="props.addIfNotFoundOption"
-              class="transition-all duration-200 ease-in-out rounded-md size-6 shrink-0 hover:cursor-pointer hover:text-white"
-              :class="[
-                {
-                  'hover:bg-blue-500': props.color === 'blue',
-                  'hover:bg-yellow-500': props.color === 'yellow',
-                  'hover:bg-violet-500': props.color === 'violet',
-                },
-              ]"
-              @click.stop="addNewItemOption(query)"
-            />
-            <p class="flex-1 italic truncate cursor-default select-none">
-              {{ props.addIfNotFoundOption ? `Add "${query}"` : 'Nothing found' }}
-            </p>
-          </div>
+              <p class="flex-1 italic truncate cursor-default select-none">
+                {{ props.addIfNotFoundOption ? `Add "${query}"` : 'Nothing found' }}
+              </p>
+            </div>
+          </template>
         </div>
       </transition>
     </teleport>
