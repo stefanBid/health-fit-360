@@ -63,7 +63,7 @@ const enabled = defineModel<boolean>('enabled', { required: true });
 
       <div
         v-if="props.label || props.help"
-        class="inline-flex items-center ml-1.5 gap-x-1"
+        class="inline-flex items-center ml-2 gap-x-0.5"
       >
         <SwitchLabel
           v-if="props.label"

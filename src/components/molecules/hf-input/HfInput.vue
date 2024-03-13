@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { generateId } from '@/utils';
 import type { ColorVariantExtra } from '@/types/global.types';
+import { HfInfoBox } from '@/components';
+import { useSlots } from 'vue';
 
 interface HfInputProps {
   color?: ColorVariantExtra;
@@ -28,6 +30,8 @@ const inputValue = defineModel<string | number>('inputValue', {
 
 defineOptions({ inheritAttrs: false });
 
+const slots = useSlots();
+
 const inputId = `input-${generateId()}`;
 
 const UNIT_MAP = {
@@ -38,17 +42,25 @@ const UNIT_MAP = {
 
 <template>
   <div class="flex flex-col gap-y-1.5">
-    <div class="inline-flex items-center gap-x-1.5">
+    <div class="inline-flex items-center w-fit">
       <slot name="toggle"></slot>
+
       <label
         v-if="props.label"
         :for="($attrs.id as string) || inputId"
         class="text-sm transition-all duration-200 ease-in-out hover:cursor-pointer sm:text-xs xs:text-xs shrink-0"
-        :class="props.disabled ? 'pointer-events-none opacity-40' : 'hover:cursor-pointer opacity-100'"
+        :class="[
+          slots.toggle ? 'ml-2' : 'ml-0',
+          props.disabled ? 'pointer-events-none opacity-40' : 'hover:cursor-pointer opacity-100'
+        ]"
       >
         {{ props.label }}
       </label>
-      <!--Help icon-->
+      <HfInfoBox
+        v-if="props.help"
+        class="ml-0.5"
+        :text="props.help"
+      />
     </div>
     <div class="relative text-sm xs:text-xs sm:text-xs">
       <input
