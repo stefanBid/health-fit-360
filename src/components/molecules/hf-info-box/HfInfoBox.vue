@@ -50,7 +50,7 @@ const transition = getTransition('scaleAndFade');
       <HfIconButton
         :icon="props.type === 'solid' ? InformationCircleIcon : InformationCircleIconOutline"
         no-style
-        class="p-0 text-gray-500 transition-colors duration-200 ease-in-out size-5 hover:text-gray-700"
+        class="p-0 text-gray-500 transition-colors duration-200 ease-in-out hover:text-gray-700"
         type="button"
         @click.stop="handleClick"
         @mouseleave.stop="handleMouseLeave"
