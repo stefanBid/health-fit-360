@@ -13,10 +13,10 @@ export { default as HfHeaderLayout } from '@/components/layouts/hf-header-layout
 export { default as HfBadge } from '@/components/molecules/hf-badge/HfBadge.vue';
 export { default as HfCard } from '@/components/molecules/hf-card/HfCard.vue';
 export { default as HfCombobox } from '@/components/molecules/hf-combobox/HfCombobox.vue';
+export { default as HfDialog } from '@/components/molecules/hf-dialog/HfDialog.vue';
 export { default as HfDropdownMenu } from '@/components/molecules/hf-dropdown-menu/HfDropdownMenu.vue';
 export { default as HfInfoBox } from '@/components/molecules/hf-info-box/HfInfoBox.vue';
 export { default as HfInput } from '@/components/molecules/hf-input/HfInput.vue';
 
 // Organisms
-export { default as HfDialog } from '@/components/organisms/hf-dialog/HfDialog.vue';
 export { default as HfTabs } from '@/components/organisms/hf-tabs/HfTabs.vue';
