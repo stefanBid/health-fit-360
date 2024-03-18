@@ -82,7 +82,7 @@ const handleClickOption = (option: string) => {
           <slot v-if="!props.options"></slot>
           <div
             v-else
-            class="flex flex-col w-full gap-y-1.5"
+            class="flex flex-col w-full"
           >
             <div
               v-for="option in props.options"
