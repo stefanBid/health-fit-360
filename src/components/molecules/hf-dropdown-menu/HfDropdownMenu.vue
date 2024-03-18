@@ -5,15 +5,10 @@ import { vOnClickOutside } from '@vueuse/components';
 import { HfIconButton } from '@/components';
 import { Bars3CenterLeftIcon, ChevronRightIcon } from '@heroicons/vue/24/solid';
 import { computed, type FunctionalComponent } from 'vue';
-
-interface MenuOption {
-  optionKey: string;
-  optionLabel: string;
-  icon?: FunctionalComponent;
-}
+import type { Option } from '@/types/global.types';
 
 interface HfDropdownMenuProps {
-  options?: MenuOption[];
+  options?: Option[];
   menuIcon?: FunctionalComponent;
   disabled?: boolean;
   onSendOption?: (option: string) => void;
@@ -50,7 +45,7 @@ const handleClickOption = (option: string) => {
 </script>
 
 <template>
-  <div class="inline-block w-fit">
+  <div class="inline-block outline-none w-fit focus:outline-none">
     <div
       ref="anchor"
       class="flex items-center"
@@ -60,7 +55,7 @@ const handleClickOption = (option: string) => {
         :icon="getMenuIcon"
         no-style
         :disabled="props.disabled"
-        class="p-2 text-black transition-all duration-200 ease-in-out bg-gray-200 border rounded-md hover:bg-gray-300 active:scale-95"
+        class="p-2 text-black transition-all duration-200 ease-in-out bg-gray-200 rounded-md outline-none hover:bg-gray-300 active:scale-95 focus:outline-none"
         type="button"
         @click="handleClick"
       />
@@ -91,9 +86,9 @@ const handleClickOption = (option: string) => {
           >
             <div
               v-for="option in props.options"
-              :key="option.optionKey"
+              :key="option.key"
               class="flex items-center p-2 text-black rounded-md gap-x-1.5 hover:cursor-pointer hover:bg-slate-100"
-              @click="handleClickOption(option.optionKey)"
+              @click="handleClickOption(option.key)"
             >
               <component
                 :is="option.icon ? option.icon : ChevronRightIcon"
@@ -102,7 +97,7 @@ const handleClickOption = (option: string) => {
               <span
                 class="flex-1 text-sm truncate transition-all ease-in-out sm:text-xs xs:text-xs dutarion-200"
               >
-                {{ option.optionLabel }}
+                {{ option.label }}
               </span>
             </div>
           </div>
