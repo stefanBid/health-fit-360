@@ -3,11 +3,12 @@ import { usePopper } from '@/hooks';
 import { getTransition } from '@/utils';
 import { vOnClickOutside } from '@vueuse/components';
 import { HfIconButton } from '@/components';
-import { Bars3CenterLeftIcon, ChevronRightIcon } from '@heroicons/vue/24/solid';
+import { Bars3CenterLeftIcon, ChevronRightIcon, XMarkIcon } from '@heroicons/vue/24/solid';
 import { computed, type FunctionalComponent } from 'vue';
-import type { Option } from '@/types/global.types';
+import type { Option, SizeVariant } from '@/types/global.types';
 
 interface HfDropdownMenuProps {
+  menuSize?: SizeVariant;
   options?: Option[];
   menuIcon?: FunctionalComponent;
   disabled?: boolean;
@@ -15,6 +16,7 @@ interface HfDropdownMenuProps {
 }
 
 const props = withDefaults(defineProps<HfDropdownMenuProps>(), {
+	menuSize: 'base',
 	options: undefined,
 	menuIcon: undefined,
 	disabled: false,
@@ -26,7 +28,9 @@ const { isOpen, anchor, popper, popperStyle, changeToolTipVisibility } =
 
 const transition = getTransition('scaleAndFade');
 
-const getMenuIcon = computed(() => props.menuIcon || Bars3CenterLeftIcon);
+const getMenuIcon = computed(() => {
+	return isOpen.value ? XMarkIcon : props.menuIcon || Bars3CenterLeftIcon;
+});
 
 const handleClick = () => {
 	if (isOpen.value) {
@@ -51,11 +55,12 @@ const handleClickOption = (option: string) => {
       class="flex items-center"
       aria-describedby="tooltip"
     >
-      <hf-icon-button
+      <HfIconButton
         :icon="getMenuIcon"
         no-style
         :disabled="props.disabled"
-        class="p-2 text-black transition-all duration-200 ease-in-out bg-gray-200 rounded-md outline-none hover:bg-gray-300 active:scale-95 focus:outline-none"
+        :class="isOpen ? 'bg-slate-300 hover:bg-transparent ' : 'bg-transparent hover:bg-slate-300'"
+        class="p-2 text-black transition-all duration-200 ease-in-out border-2 rounded-md outline-none border-slate-300 active:scale-95 focus:outline-none"
         type="button"
         @click="handleClick"
       />
@@ -77,9 +82,19 @@ const handleClickOption = (option: string) => {
             { ignore: [anchor] },
           ]"
           :style="popperStyle"
-          class="absolute z-50 flex flex-col w-40 p-1 bg-white border border-gray-300 rounded-md shadow-lg"
+          :class="[
+            {
+              'w-40': props.menuSize === 'small',
+              'w-60': props.menuSize === 'base',
+              'w-80': props.menuSize === 'large',
+            }
+          ]"
+          class="absolute z-50 flex flex-col p-2 bg-white border rounded-md shadow-lg border-slate-300"
         >
-          <slot v-if="!props.options"></slot>
+          <slot
+            v-if="!props.options"
+            :close-menu="handleClick"
+          ></slot>
           <div
             v-else
             class="flex flex-col w-full"
